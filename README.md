@@ -44,188 +44,7 @@ AlgoAspire Academy is built to provide a one-stop hub for algorithm enthusiasts.
 
 ---
 
-## Tech Stack
-
-- **Frontend:**  
-  - React for building a dynamic and responsive user interface.
-  
-- **Backend:**  
-  - Django REST Framework (DRF) for robust API development.
-  
-- **Database:**  
-  - PostgreSQL/MySQL (configurable based on deployment needs).
-  
-- **External Integrations:**  
-  - YouTube API for video content.
-  - ChatGPT API for AI-driven Q&A.
-  
-- **Deployment:**  
-  - Docker & Docker Compose for containerized deployments.
-  - Cloud hosting platforms (AWS, Heroku, etc.) for scalability.
-
----
-
-## Project Structure
-
-The project is organized into a modular structure for clarity and scalability:
-
-algoaspire_academy/ 
-├── config/ # Central configuration directory 
-│ ├── __ init __.py
-│ ├── asgi.py 
-│ ├── urls.py 
-│ ├── wsgi.py 
-│ └── settings/ # Environment-specific settings 
-│ ├── __ init __.py
-│ ├── base.py 
-│ ├── development.py 
-│ └── production.py 
-├── apps/ # Modular Django apps 
-│ ├── __ init __.py 
-│ ├── account/ # User authentication and profiles 
-│ ├── course/ # Course content management 
-│ ├── note/ # Note-taking and topic-wise notes 
-│ ├── forum/ # For asking questions and sharing blogs.
-│ ├── gamification/ # for user experience and making course fun
-│ ├── quiz/ # for recap every module
-│ └── ... # Additional apps as needed
-├── manage.py # Django management script 
-├── README.md # for explaining the project
-└── requirements.txt # Python dependencies
-
-
-## Simplified Schema:
-
- [User]
-   └── user_id (PK)
-   └── name
-   └── email
-         │
-         └─< Enrollment >─┐
- [Course]                  │   [User-Course Enrollment]
-   └── course_id (PK)      │   └── user_id (FK)
-   └── title             ──┘   └── course_id (FK)
-   └── description
-
- [Lesson]
-   └── lesson_id (PK)
-   └── title
-   └── course_id (FK)
-
- [Video]
-   └── video_id (PK)
-   └── url
-   └── lesson_id (FK)
-
- [Note]
-   └── note_id (PK)
-   └── content
-   └── user_id (FK)
-   └── video_id (FK)
-
-
-## Understand Your Business Requirements
-
--   **Identify the Core Features:**  
-    For AlgoAspire Academy, consider features such as:
-    
-    -   **User Management:** Registration, profiles, achievements.
-    -   **Courses and Lessons:** Courses with multiple lessons/modules.
-    -   **Video Content:** Videos embedded from YouTube.
-    -   **Notes & Discussions:** Personal notes, topic-wise notes, Q&A.
-    -   **Progress Tracking:** Tracking course completion, quiz scores.
-    -   **Gamification:** Points, leaderboards, badges.
--   **Determine Data Usage Patterns:**  
-    Think about read-heavy operations (e.g., loading courses, videos) and write operations (e.g., posting notes or questions).
-    
-
-----------
-
-## Identify the Key Entities
-
-Based on the features, your system might include entities such as:
-
--   **User:** Stores user details, authentication data, profile information.
--   **Course:** Contains information about a course (title, description, etc.).
--   **Lesson/Module:** Each course is broken down into lessons or modules.
--   **Video:** Details about each video (URL, title, duration, associated lesson).
--   **Note:** User-generated notes attached to videos or lessons.
--   **Question/Answer:** For Q&A sessions related to course content.
--   **Progress:** Tracks user progress, points earned, and course completion.
--   **Achievement/Badge:** For gamification and milestones.
-
-----------
-
-## Define Relationships Between Entities
-
--   **One-to-Many Relationships:**
-    -   **Course** → **Lessons:** One course can have many lessons.
-    -   **Lesson** → **Videos:** One lesson can include multiple videos.
-    -   **User** → **Notes:** One user can create many notes.
-    -   **User** → **Questions/Answers:** One user can post multiple questions or answers.
--   **Many-to-Many Relationships:**
-    -   **User** ↔ **Courses:** A user can enroll in multiple courses, and each course can have many enrolled users.
-    -   Use a join table (e.g., Enrollment) to manage this relationship.
-
-----------
-
-## Plan for Normalization and Scalability
-
--   **Normalization:**
-    
-    -   Aim for at least 3NF (Third Normal Form) to avoid data redundancy.
-    -   Ensure each table has a primary key and that foreign keys properly enforce relationships.
--   **Indexing:**
-    
-    -   Identify columns that are frequently searched or joined (like user IDs, course IDs) and add indexes to improve performance.
--   **Scalability Considerations:**
-    
-    -   **Partitioning:** For very large tables, consider partitioning data.
-    -   **Caching:** Use caching layers (e.g., Redis) for frequently accessed data.
-    -   **Replication:** Use database replicas to balance read operations.
-    -   **Denormalization (where needed):** For read-heavy operations, selectively denormalize parts of your data to reduce join complexity, but balance this against data consistency.
-
-
-## Define Vision and Goals
-
--   **Vision:**  
-    Create a comprehensive, free e-learning platform that aggregates course videos, notes, and interactive features to boost learner engagement and motivation.
-    
--   **Primary Goals:**
-    
-    -   Central hub for algorithm courses (videos, notes, Q&A).
-    -   Foster community learning with notes sharing, questions, and a leaderboard.
-    -   Gamification to reward progress (points, ranking).
-    -   Integrate modern AI tools (like ChatGPT) for real-time help.
-
-----------
-
-## Feature List and User Flow
-
-### **Core Features:**
-
--   **Course Content:**
-    
-    -   **Video Integration:**  
-        Embed YouTube videos for course lessons.
-    -   **Notes Section:**  
-        Allow users to add personal notes under each video.
-    -   **Topic-wise Notes:**  
-        A dedicated page for curated notes per topic.
--   **Interactive Q&A:**
-    
-    -   **Discussion Board:**  
-        Enable users to ask questions and discuss below each video.
-    -   **ChatGPT Integration:**  
-        Provide instant responses or hints for user queries (via ChatGPT API).
--   **Progress Tracking & Gamification:**
-    
-    -   **Progress Tracker:**  
-        Visual indicators for course progress.
-    -   **Points & Leaderboard:**  
-        Award points on completing topics, quizzes, or contributing notes to boost rankings.
-
-### **Additional Extended Features:**
+## **Additional Extended Features:**
 
 -   **Interactive Quizzes and Assignments:**
     
@@ -258,47 +77,91 @@ Based on the features, your system might include entities such as:
         -   **Learning Path Suggestions:**  
             Recommend next steps or topics based on progress.
 
-----------
 
-## Tech Stack and Architecture
-
--   **Frontend:**  
-    React for building a dynamic and responsive UI.
-    
--   **Backend:**  
-    Django REST Framework (DRF) to expose RESTful APIs.
-    
-    -   **Authentication:**  
-        Use token-based authentication (e.g., JWT).
-    -   **Database:**  
-        PostgreSQL or MySQL for robust data management.
--   **Integration:**
-    
-    -   **YouTube API:**  
-        For embedding and managing video content.
-    -   **ChatGPT API:**  
-        For powering AI responses in the Q&A section.
--   **Deployment & Scalability:**  
-    Consider containerization (Docker), cloud hosting (AWS, Heroku, etc.), and CI/CD pipelines for smooth deployment.
-
-----------
-
-## Additional Considerations
-
--   **User Engagement:**  
-    Regular updates, notifications (email or in-app), and community events (e.g., live Q&A sessions, webinars).
-    
--   **Scalability:**  
-    Design APIs and database schemas to handle increasing traffic and data as the user base grows.
-    
--   **Security:**  
-    Implement robust authentication, data validation, and moderation features to protect users.
-    
--   **SEO & Marketing:**  
-    Optimize content for search engines and plan for content marketing to attract users.
+---
 
 
------------
+## Tech Stack
+
+- **Frontend:**  
+  - React for building a dynamic and responsive user interface.
+  
+- **Backend:**  
+  - Django REST Framework (DRF) for robust API development.
+  
+- **Database:**  
+  - PostgreSQL/MySQL (configurable based on deployment needs).
+  
+- **External Integrations:**  
+  - YouTube API for video content.
+  - ChatGPT API for AI-driven Q&A.
+  
+- **Deployment:**  
+  - Docker & Docker Compose for containerized deployments.
+  - Cloud hosting platforms (AWS, Heroku, etc.) for scalability.
+
+---
+
+## Project Structure
+
+The project is organized into a modular structure for clarity and scalability:
+```
+algoaspire_academy/ 
+├── config/ # Central configuration directory 
+│ ├── __ init __.py
+│ ├── asgi.py 
+│ ├── urls.py 
+│ ├── wsgi.py 
+│ └── settings/ # Environment-specific settings 
+│ ├── __ init __.py
+│ ├── base.py 
+│ ├── development.py 
+│ └── production.py 
+├── apps/ # Modular Django apps 
+│ ├── __ init __.py 
+│ ├── account/ # User authentication and profiles 
+│ ├── course/ # Course content management 
+│ ├── note/ # Note-taking and topic-wise notes 
+│ ├── forum/ # For asking questions and sharing blogs.
+│ ├── gamification/ # for user experience and making course fun
+│ ├── quiz/ # for recap every module
+│ └── ... # Additional apps as needed
+├── manage.py # Django management script 
+├── README.md # for explaining the project
+└── requirements.txt # Python dependencies
+```
+
+## Simplified Schema:
+```
+ [User]
+   └── user_id (PK)
+   └── name
+   └── email
+         │
+         └─< Enrollment >─┐
+ [Course]                  │   [User-Course Enrollment]
+   └── course_id (PK)      │   └── user_id (FK)
+   └── title             ──┘   └── course_id (FK)
+   └── description
+
+ [Lesson]
+   └── lesson_id (PK)
+   └── title
+   └── course_id (FK)
+
+ [Video]
+   └── video_id (PK)
+   └── url
+   └── lesson_id (FK)
+
+ [Note]
+   └── note_id (PK)
+   └── content
+   └── user_id (FK)
+   └── video_id (FK)
+```
+
+---
 
 ## Title of a Student
 
