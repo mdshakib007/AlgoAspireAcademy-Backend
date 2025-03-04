@@ -8,6 +8,8 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
+from apps.account.views import CookieTokenRefreshView
+
 admin.site.site_header = 'AlgoAspire'
 
 
@@ -35,6 +37,15 @@ if settings.DEBUG:
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+
+    path('api/token/refresh/', CookieTokenRefreshView.as_view(), name='refresh-token'),
+
+    path('api/account/', include('apps.account.urls')),
+    path('api/course/', include('apps.course.urls')),
+    path('api/forum/', include('apps.forum.urls')),
+    path('api/gamification/', include('apps.gamification.urls')),
+    path('api/note/', include('apps.note.urls')),
+    path('api/quiz/', include('apps.quiz.urls')),
 ]
 
 if settings.DEBUG and swagger_url_patterns:
