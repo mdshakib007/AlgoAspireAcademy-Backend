@@ -21,7 +21,7 @@ AlgoAspire Academy is built to provide a one-stop hub for algorithm enthusiasts.
   - Access curated, topic-wise notes for deeper understanding.
   
 - **Q&A with AI Assistance:**  
-  - Ask questions and receive real-time hints via ChatGPT API.
+  - Ask questions and receive real-time hints via DeepSeek API.
   
 - **Progress Tracking & Gamification:**  
   - Track your course progress with visual indicators.
@@ -44,43 +44,6 @@ AlgoAspire Academy is built to provide a one-stop hub for algorithm enthusiasts.
 
 ---
 
-## **Additional Extended Features:**
-
--   **Interactive Quizzes and Assignments:**
-    
-    -   Embed quizzes at the end of each module.
-    -   Auto-evaluate coding challenges or algorithm problems.
--   **User Profiles & Achievements:**
-    
-    -   Customizable profiles showing badges, points, and progress.
-    -   Achievement system (e.g., “First 10 Notes,” “Quiz Master” badges).
--   **Social & Collaborative Tools:**
-    
-    -   **Forums or Chat Rooms:**  
-        Allow discussions beyond individual videos.
-    -   **Peer Reviews:**  
-        Enable users to rate or comment on each other’s notes.
--   **Content Management:**
-    
-    -   **Admin Dashboard:**  
-        For managing courses, moderating discussions, and monitoring engagement.
-    -   **Content Recommendation:**  
-        Personalized course suggestions based on user activity.
--   **Mobile Integration (Future):**
-    
-    -   A mobile-friendly web interface and eventual native mobile app.
--   **AI-Powered Learning Assistant:**
-    
-    -   Besides the ChatGPT API in Q&A, consider:
-        -   **Smart Search:**  
-            Auto-suggesting related content.
-        -   **Learning Path Suggestions:**  
-            Recommend next steps or topics based on progress.
-
-
----
-
-
 ## Tech Stack
 
 - **Frontend:**  
@@ -94,7 +57,7 @@ AlgoAspire Academy is built to provide a one-stop hub for algorithm enthusiasts.
   
 - **External Integrations:**  
   - YouTube API for video content.
-  - ChatGPT API for AI-driven Q&A.
+  - DeepSeek API for AI-driven Q&A.
   
 - **Deployment:**  
   - Docker & Docker Compose for containerized deployments.
