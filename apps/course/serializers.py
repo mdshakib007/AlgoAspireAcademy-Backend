@@ -42,8 +42,8 @@ class AssignmentSerializer(serializers.ModelSerializer):
         ]
 
 class LessonSerializer(serializers.ModelSerializer):
-    quiz = QuizSerializer(read_only=True)
-    assignment = AssignmentSerializer(read_only=True)
+    quiz = serializers.SerializerMethodField()
+    assignment = serializers.SerializerMethodField()
 
     class Meta:
         model = Lesson
@@ -57,6 +57,18 @@ class LessonSerializer(serializers.ModelSerializer):
             'quiz', 
             'assignment'
         ]
+    
+    def get_quiz(self, obj):
+        try:
+            return QuizSerializer(obj.quiz).data
+        except Quiz.DoesNotExist:
+            return None
+
+    def get_assignment(self, obj):
+        try:
+            return AssignmentSerializer(obj.assignment).data
+        except Assignment.DoesNotExist:
+            return None
 
 class ModuleSerializer(serializers.ModelSerializer):
     lessons = LessonSerializer(many=True, read_only=True)
@@ -84,8 +96,39 @@ class CourseSerializer(serializers.ModelSerializer):
             'image', 
             'description', 
             'instructor', 
+            'is_enrolled',
             'completed_modules_count', 
             'completed_assignments_count', 
             'completed_quizzes_count', 
             'modules'
         ]
+
+class CourseListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Course 
+        fields = [
+            'id',
+            'code',
+            'name',
+            'slug',
+            'image',
+            'instructor',
+            'is_enrolled',
+        ]
+
+class CreateCourseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Course
+        fields = [
+            'code',
+            'name',
+            'image',
+            'description',
+        ]
+    
+    def create(self, validated_data):
+        request = self.context.get('request')
+        instructor = request.user if request else None
+        course = Course.objects.create(**validated_data, instructor=instructor)
+        course.save()
+        return course

@@ -10,7 +10,7 @@ from apps.course.models import (
 
 
 class CourseAdmin(admin.ModelAdmin):
-    list_display = ['code', 'name', 'created_at', 'updated_at']
+    list_display = ['code', 'name', 'is_published', 'created_at', 'updated_at']
 
 admin.site.register(Course, CourseAdmin)
 admin.site.register(Module)

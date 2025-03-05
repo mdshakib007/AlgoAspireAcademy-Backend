@@ -30,6 +30,8 @@ class Course(CompletableModel):
     image = models.URLField()
     description = models.TextField()
     instructor = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='courses')
+
+    is_enrolled = models.BooleanField(default=False)
     completed_modules_count = models.PositiveIntegerField(default=0)
     completed_assignments_count = models.PositiveIntegerField(default=0)
     completed_quizzes_count = models.PositiveIntegerField(default=0)
@@ -45,7 +47,9 @@ class Course(CompletableModel):
             models.Index(fields=['code']), # quick lookup by course code.
             models.Index(fields=['is_published']), # If filtering on published courses.
             models.Index(fields=['is_deleted']), # If soft-deleted courses are frequently filtered out.
+            models.Index(fields=['instructor']),  # Optimize queries filtering by instructor
         ]
+        ordering = ['created_at']
     
     def __str__(self):
         return f"{self.name}"
@@ -59,6 +63,7 @@ class Module(CompletableModel):
 
     class Meta:
         db_table = 'modules'
+        ordering = ['created_at']
 
     def __str__(self):
         return f"{self.course.name} - {self.title}"
@@ -79,6 +84,7 @@ class Lesson(CompletableModel):
             models.Index(fields=['is_completed']), # If filtering on completed lessons.
             models.Index(fields=['lecture_type']),
         ]
+        ordering = ['created_at']
 
     def __str__(self):
         return f"{self.title}"
@@ -89,6 +95,7 @@ class Quiz(CompletableModel):
 
     class Meta:
         db_table = 'quizzes'
+        ordering = ['created_at']
 
     def __str__(self):
         return f"{self.lesson.title}"
@@ -108,6 +115,7 @@ class Question(BaseModel):
 
     class Meta:
         db_table = 'questions'
+        ordering = ['created_at']
 
     def __str__(self):
         return f"{self.quiz.lesson.title} - {self.title[:50]}"
@@ -122,6 +130,7 @@ class Assignment(CompletableModel):
 
     class Meta:
         db_table = 'assignments'
+        ordering = ['created_at']
 
     def __str__(self):
         return f"{self.lesson.title}"

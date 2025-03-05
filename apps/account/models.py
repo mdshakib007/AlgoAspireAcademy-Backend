@@ -34,6 +34,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     organization = models.CharField(max_length=100, null=True, blank=True) # School, College, University or Company
 
     is_admin = models.BooleanField(default=False)
+    is_instructor = models.BooleanField(default=False)
     is_verified = models.BooleanField(default=False)
     is_deleted = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)
