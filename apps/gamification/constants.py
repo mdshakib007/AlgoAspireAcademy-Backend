@@ -1,104 +1,83 @@
 from django.db import models
-from enum import Enum
 
-class Titles(models.TextChoices):
-    MERRY_BEGINNER = "Merry Beginner"
-    CHEEKY_APPRENTICE = "Cheeky Apprentice"
-    JOLLY_JOURNEYMAN = "Jolly Journeyman"
-    QUIRKY_CONQUEROR = "Quirky Conqueror"
-    WITTY_WARRIOR = "Witty Warrior"
-    CLEVER_COMMANDER = "Clever Commander"
-    SUPREME_SAGE = "Supreme Sage"
-    ULTRA_LEGEND = "Ultra Legend"
-
-    @classmethod
-    def choices(cls):
-        """Returns a list of tuples suitable for Django model choices."""
-        return [(title.name, title.value) for title in cls]
+class TitleChoices(models.TextChoices):
+    MERRY_BEGINNER = "Merry Beginner", "Merry Beginner"
+    CHEEKY_APPRENTICE = "Cheeky Apprentice", "Cheeky Apprentice"
+    JOLLY_JOURNEYMAN = "Jolly Journeyman", "Jolly Journeyman"
+    QUIRKY_CONQUEROR = "Quirky Conqueror", "Quirky Conqueror"
+    WITTY_WARRIOR = "Witty Warrior", "Witty Warrior"
+    CLEVER_COMMANDER = "Clever Commander", "Clever Commander"
+    SUPREME_SAGE = "Supreme Sage", "Supreme Sage"
+    ULTRA_LEGEND = "Ultra Legend", "Ultra Legend"
 
 
-class Badge(Enum):
-
-    ROOKIE_SCHOLAR = "Rookie Scholar"  # Complete your first course
-    ENLIGHTENED_MIND = "Enlightened Mind"  # Complete 5 courses
-    THE_MENTOR = "The Mentor"  # Answer 50 questions
-    THE_CURATOR = "The Curator"  # Write 50 blog posts
-    THE_HELPER = "The Helper"  # Upvote 100 notes
-    ENGAGEMENT_KING = "Engagement King"  # Have 100 comments on your content
-    DAILY_STREAK = "Daily Streak"  # Log in every day for a month
-    QUIZ_MASTER = "Quiz Master"  # Get 100% in 10 quizzes
-    COMMUNITY_BUILDER = "Community Builder"  # Follow 50 people
-    LEARNING_MACHINE = "Learning Machine"  # Complete all courses in a month
-    KING_OF_NOTES = "King of Notes"  # Publish 100 public notes
-    DIAMOND_LEARNER = "Diamond Learner"  # Earn 1,000,000 Neon
-    IMMORTAL_SAGE = "Immortal Sage"  # Earn `Supreme Sage` title
-    ALGOASPIRE_OG = "AlgoAspire OG"  # Join in the first month
-    INFINITY_SCHOLAR = "Infinity Scholar"  # Unlock all badges
-
-    @classmethod
-    def choices(cls):
-        """Returns a list of tuples suitable for Django model choices."""
-        return [(badge.name, badge.value) for badge in cls]
+class BadgeChoices(models.TextChoices):
+    ROOKIE_SCHOLAR = "Rookie Scholar",  "Rookie Scholar" # Complete your first course
+    ENLIGHTENED_MIND = "Enlightened Mind",  "Enlightened Mind"  # Complete 5 courses
+    THE_MENTOR = "The Mentor", "The Mentor"  # Answer 50 questions
+    THE_CURATOR = "The Curator", "The Curator"  # Write 50 blog posts
+    THE_HELPER = "The Helper", "The Helper"  # Upvote 100 notes
+    ENGAGEMENT_KING = "Engagement King", "Engagement King"  # Have 100 comments on your content
+    DAILY_STREAK = "Daily Streak", "Daily Streak"  # Log in every day for a month
+    QUIZ_MASTER = "Quiz Master", "Quiz Master"  # Get 100% in 10 quizzes
+    COMMUNITY_BUILDER = "Community Builder", "Community Builder"  # Follow 50 people
+    LEARNING_MACHINE = "Learning Machine", "Learning Machine"  # Complete all courses in a month
+    KING_OF_NOTES = "King of Notes", "King of Notes"  # Publish 100 public notes
+    DIAMOND_LEARNER = "Diamond Learner", "Diamond Learner"  # Earn 1,000,000 Neon
+    IMMORTAL_SAGE = "Immortal Sage", "Immortal Sage"  # Earn `Supreme Sage` title
+    ALGOASPIRE_OG = "AlgoAspire OG", "AlgoAspire OG"  # Join in the first month
+    INFINITY_SCHOLAR = "Infinity Scholar", "Infinity Scholar"  # Unlock all badges
 
 
-
-class Achievement(Enum):
-    FIRST_STEPS = "First Steps"  # Enroll in the first course
-    MODULE_MASTER = "Module Master"  # Complete 5 modules
-    TOPIC_TACKLER = "Topic Tackler"  # Complete 10 topics
-    VIDEO_VISIONARY = "Video Visionary"  # Watch 50 course videos
-    THE_NOTE_TAKER = "The Note Taker"  # Write 5 public notes
-    THE_REVIEWER = "The Reviewer"  # React to 10 notes
-    QUESTIONER = "Questioner"  # Ask 5 questions
-    PROBLEM_SOLVER = "Problem Solver"  # Answer 5 questions
-    ASPIRING_BLOGGER = "Aspiring Blogger"  # Write your first blog post
-    TIME_KEEPER = "Time Keeper"  # Complete a course on time
-    KNOWLEDGE_COLLECTOR = "Knowledge Collector"  # Complete 3 courses
-    LEGENDARY_LEARNER = "Legendary Learner"  # Complete 10 courses
-    QUIZ_CHAMPION = "Quiz Champion"  # Score 90%+ on a quiz
-    STREAK_STARTER = "Streak Starter"  # Log in for 3 consecutive days
-    STREAK_MASTER = "Streak Master"  # Log in for 7 consecutive days
-    STREAK_BEAST = "Streak Beast"  # Log in for 30 consecutive days
-    DAILY_WARRIOR = "Daily Warrior"  # Earn Neon for 7 days in a row (Login reward not included)
-    ULTIMATE_GRINDER = "Ultimate Grinder"  # Earn 10,000+ Neon
-    MASTER_OF_NOTES = "Master of Notes"  # Publish 50 public notes
-    THE_EDUCATOR = "The Educator"  # Answer 50 questions
-    DISCUSSION_STARTER = "Discussion Starter"  # Get 10 comments on your blog
-    SOCIAL_BUTTERFLY = "Social Butterfly"  # Follow 10 users
-    ELITE_MENTOR = "Elite Mentor"  # Get 100 upvotes on answers
-    POPULAR_AUTHOR = "Popular Author"  # Have 50 upvotes on a blog
-    CERTIFIED_GENIUS = "Certified Genius"  # Earn 10 badges
-    NEON_COLLECTOR = "Neon Collector"  # Earn 100,000 Neon
-    HALFWAY_HERO = "Halfway Hero"  # Complete 50% of all available courses
-    ENDGAME_SCHOLAR = "Endgame Scholar"  # Complete all available courses
-    EXPLORER = "Explorer"  # Try 5 different categories
-    MULTI_TALENTED = "Multi-Talented"  # Complete 5 courses from different categories
-    THE_PIONEER = "The Pioneer"  # Be one of the first 100 users on the platform
-    SEASONED_WARRIOR = "Seasoned Warrior"  # Earn 1,000,000 Neon
-    ELITE_SCHOLAR = "Elite Scholar"  # Maintain a 90%+ completion rate in all courses
-    GOLDEN_PEN = "Golden Pen"  # Write 100 blogs
-    FORUM_KING = "Forum King"  # Start 100 discussions
-    COMMUNITY_LEGEND = "Community Legend"  # Upvote 500 notes or blogs
-    TIME_TRAVELER = "Time Traveler"  # Spend 500+ hours on the platform
-    LIFELONG_LEARNER = "Lifelong Learner"  # Be active for 1 year
-    THE_OG = "The OG"  # Join within the first month of launch
-    SPEED_RUNNER = "Speed Runner"  # Complete a course in less than 7 days
-    NIGHT_OWL = "Night Owl"  # Study between 2 AM - 4 AM for 10 days
-    MORNING_WARRIOR = "Morning Warrior"  # Study between 5 AM - 7 AM for 10 days
-    THE_PERFECTIONIST = "The Perfectionist"  # Score 100% on a quiz 5 times
-    MASTER_OF_MASTERY = "Master of Mastery"  # Unlock all achievements
-    THE_ULTIMATE_SAGE = "The Ultimate Sage"  # Earn 10,000,000 Neon
-
-    @classmethod
-    def choices(cls):
-        """Returns a list of tuples suitable for Django model choices."""
-        return [(achievement.name, achievement.value) for achievement in cls]
+class AchievementChoices(models.TextChoices):
+    FIRST_STEPS = "First Steps","First Steps"  # Enroll in the first course
+    MODULE_MASTER = "Module Master","Module Master"  # Complete 5 modules
+    TOPIC_TACKLER = "Topic Tackler", "Topic Tackler"  # Complete 10 topics
+    VIDEO_VISIONARY = "Video Visionary", "Video Visionary"  # Watch 50 course videos
+    THE_NOTE_TAKER = "The Note Taker", "The Note Taker"  # Write 5 public notes
+    THE_REVIEWER = "The Reviewer", "The Reviewer" # React to 10 notes
+    QUESTIONER = "Questioner", "Questioner"  # Ask 5 questions
+    PROBLEM_SOLVER = "Problem Solver", "Problem Solver"  # Answer 5 questions
+    ASPIRING_BLOGGER = "Aspiring Blogger", "Aspiring Blogger"  # Write your first blog post
+    TIME_KEEPER = "Time Keeper",  "Time Keeper"  # Complete a course on time
+    KNOWLEDGE_COLLECTOR = "Knowledge Collector", "Knowledge Collector"  # Complete 3 courses
+    LEGENDARY_LEARNER = "Legendary Learner", "Legendary Learner"  # Complete 10 courses
+    QUIZ_CHAMPION = "Quiz Champion", "Quiz Champion"  # Score 90%+ on a quiz
+    STREAK_STARTER = "Streak Starter", "Streak Starter"  # Log in for 3 consecutive days
+    STREAK_MASTER = "Streak Master", "Streak Master"  # Log in for 7 consecutive days
+    STREAK_BEAST = "Streak Beast","Streak Beast"  # Log in for 30 consecutive days
+    DAILY_WARRIOR = "Daily Warrior", "Daily Warrior"  # Earn Neon for 7 days in a row (Login reward not included)
+    ULTIMATE_GRINDER = "Ultimate Grinder", "Ultimate Grinder"  # Earn 10,000+ Neon
+    MASTER_OF_NOTES = "Master of Notes", "Master of Notes"  # Publish 50 public notes
+    THE_EDUCATOR = "The Educator", "The Educator"  # Answer 50 questions
+    DISCUSSION_STARTER = "Discussion Starter", "Discussion Starter"  # Get 10 comments on your blog
+    SOCIAL_BUTTERFLY = "Social Butterfly", "Social Butterfly"  # Follow 10 users
+    ELITE_MENTOR = "Elite Mentor", "Elite Mentor"  # Get 100 upvotes on answers
+    POPULAR_AUTHOR = "Popular Author" , "Popular Author" # Have 50 upvotes on a blog
+    CERTIFIED_GENIUS = "Certified Genius", "Certified Genius"  # Earn 10 badges
+    NEON_COLLECTOR = "Neon Collector", "Neon Collector"  # Earn 100,000 Neon
+    HALFWAY_HERO = "Halfway Hero", "Halfway Hero"  # Complete 50% of all available courses
+    ENDGAME_SCHOLAR = "Endgame Scholar", "Endgame Scholar"  # Complete all available courses
+    EXPLORER = "Explorer" , "Explorer" # Try 5 different categories
+    MULTI_TALENTED = "Multi-Talented" , "Multi-Talented" # Complete 5 courses from different categories
+    THE_PIONEER = "The Pioneer", "The Pioneer"  # Be one of the first 100 users on the platform
+    SEASONED_WARRIOR = "Seasoned Warrior", "Seasoned Warrior"  # Earn 1,000,000 Neon
+    ELITE_SCHOLAR = "Elite Scholar", "Elite Scholar"  # Maintain a 90%+ completion rate in all courses
+    GOLDEN_PEN = "Golden Pen", "Golden Pen"  # Write 100 blogs
+    FORUM_KING = "Forum King", "Forum King"  # Start 100 discussions
+    COMMUNITY_LEGEND = "Community Legend", "Community Legend"  # Upvote 500 notes or blogs
+    TIME_TRAVELER = "Time Traveler", "Time Traveler"  # Spend 500+ hours on the platform
+    LIFELONG_LEARNER = "Lifelong Learner","Lifelong Learner"   # Be active for 1 year
+    THE_OG = "The OG" ,  "The OG" # Join within the first month of launch
+    SPEED_RUNNER = "Speed Runner", "Speed Runner"  # Complete a course in less than 7 days
+    NIGHT_OWL = "Night Owl", "Night Owl"  # Study between 2 AM - 4 AM for 10 days
+    MORNING_WARRIOR = "Morning Warrior", "Morning Warrior"  # Study between 5 AM - 7 AM for 10 days
+    THE_PERFECTIONIST = "The Perfectionist", "The Perfectionist"  # Score 100% on a quiz 5 times
+    MASTER_OF_MASTERY = "Master of Mastery", "Master of Mastery"  # Unlock all achievements
+    THE_ULTIMATE_SAGE = "The Ultimate Sage", "The Ultimate Sage"  # Earn 10,000,000 Neon
 
 
-from enum import Enum
-
-class Activity(Enum):
-
+class ActivityChoices(models.TextChoices):
     JOINED_ALGOASPIRE = "Joined AlgoAspire"  # User joined the platform
     LOGGED_IN = "Logged-In"  # User logged into their account
     FOLLOWED_PERSON = "Followed a Person"  # User followed another person
@@ -129,8 +108,3 @@ class Activity(Enum):
     UPGRADED_TITLE = "Upgraded a Title"  # User upgraded their title/rank
     EARNED_BADGE = "Earned a Badge"  # User earned a new badge
     MAINTAINED_STREAK = "Maintained a Streak"  # User maintained a login streak    LOST_STREAK = "Lost a Streak"  # User lost their login streak
-
-    @classmethod
-    def choices(cls):
-        """Returns a list of tuples suitable for Django model choices."""
-        return [(activity.name, activity.value) for activity in cls]

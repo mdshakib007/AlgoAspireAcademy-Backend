@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from django.views.decorators.cache import cache_page
 from django.utils.decorators import method_decorator
 from django.core.cache import cache
-import logging 
+import logging
 from drf_yasg import openapi 
 from drf_yasg.utils import swagger_auto_schema 
 from rest_framework import status 
@@ -14,27 +14,19 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView, DestroyAPIView, UpdateAPIView
 
 from apps.course.models import (
-    Course, 
-    Module,
-    Lesson,
-    Quiz,
-    Question,
-    Assignment,
+    Course, Module, Lesson, Quiz,
+    Question, Assignment,
 )
 from apps.course.serializers import (
+    CourseDetailsSerializer,
     CourseListSerializer,
-    CreateCourseSerializer,
-    CourseSerializer, 
-    ModuleSerializer,
-    LessonSerializer, 
-    QuizSerializer, 
-    QuestionSerializer ,
-    AssignmentSerializer, 
+    CreateCourseSerializer
 )
 
 logger = logging.getLogger(__name__)
 
 user = get_user_model()
+
 
 class CustomPagination(PageNumberPagination):
     page_size = 10
@@ -45,7 +37,7 @@ class CourseListAPIView(ListAPIView):
     queryset = Course.objects.filter(
         is_published=True,
         is_deleted=False
-    ).select_related('instructor').prefetch_related('modules')
+    ).select_related('instructor')
 
     serializer_class = CourseListSerializer 
     pagination_class = CustomPagination
@@ -77,7 +69,7 @@ class CourseListAPIView(ListAPIView):
 
 class CourseDetailsAPIView(RetrieveAPIView):
     queryset = Course.objects.filter(is_published=True, is_deleted=False)
-    serializer_class = CourseSerializer
+    serializer_class = CourseDetailsSerializer
 
     @swagger_auto_schema(
         tags=['Course'],
@@ -105,22 +97,7 @@ class CourseDetailsAPIView(RetrieveAPIView):
                 course =  Course.objects.filter(
                     is_published=True, 
                     is_deleted=False
-                ).prefetch_related(
-                    Prefetch(
-                        'modules',
-                        queryset=Module.objects.prefetch_related(
-                            Prefetch(
-                                'lessons',
-                                queryset=Lesson.objects.select_related('quiz', 'assignment').prefetch_related(
-                                    Prefetch(
-                                        'quiz__questions',
-                                        queryset=Question.objects.all()
-                                    )
-                                )
-                            )
-                        )
-                    )
-                ).get(pk=course_id)
+                ).prefetch_related('modules').get(pk=course_id)
                 cache.set(cache_key, course, timeout=60*10) # cache for 10 minutes
             except Course.DoesNotExist:
                 raise NotFound("Course not found")
@@ -149,6 +126,7 @@ class CreateCourseAPIView(CreateAPIView):
 class UpdateCourseAPIView(UpdateAPIView):
     http_method_names = ['put']
     serializer_class = CreateCourseSerializer
+    queryset = Course.objects.filter(is_deleted=False)
 
     def get_object(self):
         return Course.objects.get(instructor=self.request.user, pk=self.kwargs.get('pk'), is_deleted=False)
@@ -175,6 +153,7 @@ class UpdateCourseAPIView(UpdateAPIView):
 
 class DeleteCourseAPIView(DestroyAPIView):
     serializer_class = CreateCourseSerializer
+    queryset = Course.objects.filter(is_deleted=False)
 
     def get_object(self):
         return Course.objects.get(instructor=self.request.user, pk=self.kwargs.get('pk'), is_deleted=False)

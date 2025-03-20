@@ -5,3 +5,8 @@ from .course_views import (
     UpdateCourseAPIView,
     DeleteCourseAPIView,
 )
+
+from .module_views import(
+    ModuleListAPIView,
+    
+)

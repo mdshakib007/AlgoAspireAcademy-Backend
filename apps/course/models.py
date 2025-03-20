@@ -81,7 +81,7 @@ class Lesson(CompletableModel):
         db_table = 'lessons'
         indexes = [
             models.Index(fields=['module']),
-            models.Index(fields=['is_completed']), # If filtering on completed lessons.
+            models.Index(fields=['is_completed']),
             models.Index(fields=['lecture_type']),
         ]
         ordering = ['created_at']
@@ -92,6 +92,7 @@ class Lesson(CompletableModel):
 
 class Quiz(CompletableModel):
     lesson = models.OneToOneField(Lesson, on_delete=models.CASCADE, related_name='quiz')
+    title = models.CharField(max_length=100)
 
     class Meta:
         db_table = 'quizzes'
@@ -101,7 +102,7 @@ class Quiz(CompletableModel):
         return f"{self.lesson.title}"
 
 
-class Question(BaseModel):
+class Question(CompletableModel):
     quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name='questions')
     title = models.TextField()
     option_1 = models.CharField(max_length=200)
@@ -123,8 +124,9 @@ class Question(BaseModel):
 
 class Assignment(CompletableModel):
     lesson = models.OneToOneField(Lesson, on_delete=models.CASCADE, related_name='assignment')
+    title = models.CharField(max_length=100)
     question = models.TextField()
-    answer = models.TextField() # here student submits their answer
+    answer = models.URLField() # here student submits their answer
     total_mark = models.PositiveIntegerField(default=10)
     obtained_mark = models.PositiveIntegerField(null=True, blank=True)
 

@@ -1,7 +1,7 @@
 from django.db import models
 
 from apps.account.models import User
-from apps.gamification.constants import Titles, Activity, Badge, Achievement
+from apps.gamification.constants import TitleChoices, ActivityChoices, BadgeChoices, AchievementChoices
 
 
 class BaseModel(models.Model):
@@ -15,7 +15,7 @@ class UserAchievement(BaseModel):
     user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='achievement')
 
     neons = models.PositiveIntegerField(default=0)
-    title = models.CharField(max_length=100, choices=Titles.choices, default="Merry Beginner")
+    title = models.CharField(max_length=100, choices=TitleChoices.choices, default=TitleChoices.MERRY_BEGINNER)
     badges = models.ManyToManyField('Badge', blank=True)
     achievements = models.ManyToManyField('Achievement', blank=True)
 
@@ -25,7 +25,7 @@ class UserAchievement(BaseModel):
 
 class UserActivityLog(BaseModel):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='activity_logs')
-    activity_type = models.CharField(max_length=100, choices=Activity.choices)
+    activity_type = models.CharField(max_length=100, choices=ActivityChoices.choices)
     neon_earned = models.PositiveIntegerField(default=1)
     timestamp = models.DateTimeField(auto_now_add=True)
 
@@ -35,7 +35,7 @@ class UserActivityLog(BaseModel):
 
 class Badge(BaseModel):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='badges')
-    badge_type = models.CharField(max_length=100, choices=Badge.choices)
+    badge_type = models.CharField(max_length=100, choices=BadgeChoices.choices)
     awarded_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -44,7 +44,7 @@ class Badge(BaseModel):
 
 class Achievement(BaseModel):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='achievements')
-    achievement_type = models.CharField(max_length=100, choices=Achievement.choices)
+    achievement_type = models.CharField(max_length=100, choices=AchievementChoices.choices)
     unlocked_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
