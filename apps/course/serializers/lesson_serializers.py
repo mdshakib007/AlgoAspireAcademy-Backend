@@ -7,7 +7,7 @@ from .assignment_serializers import AssignmentDetailsSerializer
 
 class LessonCreateSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Module
+        model = Lesson
         fields = [
             'module', 'title', 'summary', 
             'lecture_type', 'video', 'text_editorial'
@@ -16,7 +16,7 @@ class LessonCreateSerializer(serializers.ModelSerializer):
 
 class LessonListSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Module
+        model = Lesson
         fields = [
             'id', 'module', 'title', 'lecture_type'
         ]

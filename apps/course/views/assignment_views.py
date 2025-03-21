@@ -18,9 +18,9 @@ from apps.course.models import (
     Question, Assignment,
 )
 from apps.course.serializers import (
-    QuizCreateSerializer,
-    QuizDetailsSerializer,
-    QuizListSerializer
+    AssignmentCreateSerializer,
+    AssignmentDetailsSerializer,
+    AssignmentListSerializer
 )
 
 logger = logging.getLogger(__name__)
@@ -28,21 +28,21 @@ logger = logging.getLogger(__name__)
 user = get_user_model()
 
 
-class QuizListAPIView(ListAPIView):
+class AssignmentListAPIView(ListAPIView):
     pass
 
 
-class QuizDetailsAPIView(RetrieveAPIView):
+class AssignmentDetailsAPIView(RetrieveAPIView):
     pass
 
 
-class CreateQuizAPIView(CreateAPIView):
+class CreateAssignmentAPIView(CreateAPIView):
     pass
 
 
-class UpdateQuizAPIView(UpdateAPIView):
+class UpdateAssignmentAPIView(UpdateAPIView):
     pass
 
 
-class DeleteQuizAPIView(DestroyAPIView):
+class DeleteAssignmentAPIView(DestroyAPIView):
     pass

@@ -18,11 +18,31 @@ from apps.course.models import (
     Question, Assignment,
 )
 from apps.course.serializers import (
-    CourseDetailsSerializer,
-    CourseListSerializer,
-    CreateCourseSerializer
+    LessonDetailsSerializer,
+    LessonListSerializer,
+    LessonCreateSerializer
 )
 
 logger = logging.getLogger(__name__)
 
 user = get_user_model()
+
+
+class LessonListAPIView(ListAPIView):
+    pass
+
+
+class LessonDetailsAPIView(RetrieveAPIView):
+    pass
+
+
+class CreateLessonAPIView(CreateAPIView):
+    pass
+
+
+class UpdateLessonAPIView(UpdateAPIView):
+    pass
+
+
+class DeleteLessonAPIView(DestroyAPIView):
+    pass
