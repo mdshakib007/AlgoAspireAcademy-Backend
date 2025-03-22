@@ -28,21 +28,176 @@ logger = logging.getLogger(__name__)
 user = get_user_model()
 
 
+class CustomPagination(PageNumberPagination):
+    page_size = 10
+    max_page_size = 100
+
+
+@method_decorator(cache_page(60*60), name='dispatch')
 class QuizListAPIView(ListAPIView):
-    pass
+    serializer_class = QuizListSerializer
+    pagination_class = CustomPagination
+
+    def get_queryset(self):
+        queryset = Quiz.objects.filter(is_deleted=False)
+        lesson_id = self.request.query_params.get('lesson_id')
+        is_published = self.request.query_params.get('is_published')
+
+        if lesson_id:
+            queryset = queryset.filter(lesson=lesson_id)
+        if is_published:
+            is_published = is_published.lower() in ['true', '1', 'yes']
+            queryset = queryset.filter(is_published=is_published)
+        return queryset
+    
+    @swagger_auto_schema(
+        tags=['Quiz'],
+        manual_parameters=[
+            openapi.Parameter(
+                'lesson_id',
+                openapi.IN_QUERY,
+                description='Filter by lesson id',
+                type=openapi.TYPE_INTEGER,
+                required=False,
+            ),
+            openapi.Parameter(
+                'is_published',
+                openapi.IN_QUERY,
+                description='Filter by published or private',
+                type=openapi.TYPE_BOOLEAN,
+                required=False,
+                default=True
+            ),
+            openapi.Parameter(
+                'paginated',
+                openapi.IN_QUERY,
+                description='Enable or disable pagination',
+                type=openapi.TYPE_BOOLEAN,
+                required=False,
+                default=True
+            )
+        ]
+    )
+    def get(self, request, *args, **kwargs):
+        paginated = self.request.query_params.get('paginated', 'true').lower() == 'true'
+        if not paginated:
+            self.pagination_class = None
+        
+        return super().get(request, *args, **kwargs)
 
 
 class QuizDetailsAPIView(RetrieveAPIView):
-    pass
+    queryset = Quiz.objects.filter(is_deleted=False)
+    serializer_class = QuizDetailsSerializer
+
+    @swagger_auto_schema(
+        tags=['Quiz'],
+        responses={
+            status.HTTP_200_OK: openapi.Response(description='Quiz details'),
+            status.HTTP_400_BAD_REQUEST: openapi.Response(description='An error occurred'),
+            status.HTTP_404_NOT_FOUND: openapi.Response(description='Quiz not found')
+        }
+    )
+    def get(self, request, *args, **kwargs):
+        try:
+            quiz = self.get_object()
+            serializer = self.get_serializer(quiz)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Quiz.DoesNotExist:
+            return Response({'error': 'Quiz not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+    def get_object(self):
+        quiz_id = self.kwargs.get('pk')
+        cache_key = f"quiz_{quiz_id}"
+        quiz = cache.get(cache_key)
+
+        if not quiz:
+            try:
+                quiz = self.queryset.prefetch_related('questions').get(pk=quiz_id)
+                cache.set(cache_key, quiz, timeout=60*10)
+            except Quiz.DoesNotExist:
+                raise NotFound("Quiz not found")
+        
+        return quiz
 
 
 class CreateQuizAPIView(CreateAPIView):
-    pass
+    serializer_class = QuizCreateSerializer
+
+    @swagger_auto_schema(
+        tags=['Quiz'],
+        request_body= QuizCreateSerializer,
+        responses={
+            status.HTTP_201_CREATED: openapi.Response(description='Quiz created successfully'),
+            status.HTTP_400_BAD_REQUEST: openapi.Response(description='An error occurred'),
+            status.HTTP_401_UNAUTHORIZED: openapi.Response(description='You are not authorized to create a quiz')
+        }
+    )
+    def post(self, request, *args, **kwargs):
+        if request.user.is_instructor:
+            return super().post(request, *args, **kwargs)
+        return Response({'error': 'You are not authorized to create a quiz'}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 class UpdateQuizAPIView(UpdateAPIView):
-    pass
+    http_method_names = ['put']
+    serializer_class = QuizCreateSerializer
+    queryset = Quiz.objects.filter(is_deleted=False)
+
+    def get_object(self):
+        return self.queryset.get(pk=self.kwargs.get('pk'))
+    
+    @swagger_auto_schema(
+        tags=['Quiz'],
+        request_body= QuizCreateSerializer,
+        responses={
+            status.HTTP_200_OK: openapi.Response(description='Quiz updated successfully'),
+            status.HTTP_400_BAD_REQUEST: openapi.Response(description='An error occurred'),
+            status.HTTP_404_NOT_FOUND: openapi.Response(description='Quiz not found'),
+            status.HTTP_401_UNAUTHORIZED: openapi.Response(description='you are not authorized to edit Quiz')
+        }
+    )
+    def put(self, request, *args, **kwargs):
+        if request.user.is_instructor:
+            try:
+                instance = self.get_object()
+                serializer = self.get_serializer(instance, data=request.data, partial=True)
+                serializer.is_valid(raise_exception=True)
+                serializer.save()
+                return Response(serializer.data)
+            except Quiz.DoesNotExist:
+                return Response({'error': 'Quiz not found'}, status=status.HTTP_404_NOT_FOUND)
+        else:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 
 class DeleteQuizAPIView(DestroyAPIView):
-    pass
+    serializer_class = QuizCreateSerializer
+    queryset = Quiz.objects.filter(is_deleted=False)
+
+    def get_object(self):
+        return self.queryset.get(pk=self.kwargs.get('pk'))
+
+    @swagger_auto_schema(
+        tags=['Quiz'],
+        responses={
+            status.HTTP_204_NO_CONTENT: openapi.Response(description='Quiz deleted successfully'),
+            status.HTTP_400_BAD_REQUEST: openapi.Response(description='An error occurred'),
+            status.HTTP_404_NOT_FOUND: openapi.Response(description='Quiz not found'),
+            status.HTTP_401_UNAUTHORIZED: openapi.Response(description='you are not authorized to delete Quiz')
+        }
+    )
+    def delete(self, request, *args, **kwargs):
+        if request.user.is_instructor:
+            return self.destroy(request, *args, **kwargs)
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+    def destroy(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+            instance.is_deleted = True
+            instance.is_published = False 
+            instance.save()
+            return Response({'success': 'Quiz deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+        except Quiz.DoesNotExist:
+            return Response({'error': 'Quiz not found'}, status=status.HTTP_404_NOT_FOUND)

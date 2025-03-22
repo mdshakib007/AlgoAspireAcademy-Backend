@@ -113,7 +113,7 @@ class LessonDetailsAPIView(RetrieveAPIView):
 
         if not lesson:
             try:
-                lesson = self.queryset.select_related('quiz', 'assignment').get(pk=lesson_id)
+                lesson = self.queryset.get(pk=lesson_id)
                 cache.set(cache_key, lesson, timeout=60*10)
             except Lesson.DoesNotExist:
                 raise NotFound("Lesson not found")
