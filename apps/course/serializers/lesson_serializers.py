@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from apps.course.models import Module, Lesson
+from apps.course.models import Module, Lesson, Quiz, Assignment
 from .quiz_serializers import QuizDetailsSerializer
 from .assignment_serializers import AssignmentDetailsSerializer
 
@@ -10,7 +10,8 @@ class LessonCreateSerializer(serializers.ModelSerializer):
         model = Lesson
         fields = [
             'module', 'title', 'summary', 
-            'lecture_type', 'video', 'text_editorial'
+            'lecture_type', 'video', 'text_editorial',
+            'is_published',
         ]
 
 
@@ -18,7 +19,8 @@ class LessonListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Lesson
         fields = [
-            'id', 'module', 'title', 'lecture_type'
+            'id', 'module', 'title', 'lecture_type', 
+            'is_published',
         ]
 
 
@@ -30,7 +32,8 @@ class LessonDetailsSerializer(serializers.ModelSerializer):
         model = Lesson
         fields = [
             'id', 'module', 'title', 'summary', 'lecture_type', 
-            'video', 'text_editorial', 'quiz', 'assignment'
+            'video', 'text_editorial', 'quiz', 'assignment', 
+            'is_published', 'created_at', 'updated_at'
         ]
     
     def get_quiz(self, obj):

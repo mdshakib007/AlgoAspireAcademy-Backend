@@ -63,6 +63,11 @@ class Module(CompletableModel):
 
     class Meta:
         db_table = 'modules'
+        indexes = [
+            models.Index(fields=['course']),
+            models.Index(fields=['is_deleted']),
+            models.Index(fields=['is_published'])
+        ]
         ordering = ['created_at']
 
     def __str__(self):

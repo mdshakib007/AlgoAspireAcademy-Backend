@@ -34,17 +34,29 @@ class CustomPagination(PageNumberPagination):
 
 @method_decorator(cache_page(60*60), name='dispatch') # caches for 1 hour
 class CourseListAPIView(ListAPIView):
-    queryset = Course.objects.filter(
-        is_published=True,
-        is_deleted=False
-    ).select_related('instructor')
-
     serializer_class = CourseListSerializer 
     pagination_class = CustomPagination
+
+    def get_queryset(self):
+        queryset = Course.objects.filter(is_deleted=False)
+        is_published = self.request.query_params.get('is_published')
+
+        if is_published:
+            is_published = is_published.lower() in ['true', '1', 'yes']
+            queryset = queryset.filter(is_published=is_published)
+        return queryset
 
     @swagger_auto_schema(
         tags=['Course'],
         manual_parameters=[
+            openapi.Parameter(
+                'is_published',
+                openapi.IN_QUERY,
+                description="Filter by published or private",
+                type=openapi.TYPE_BOOLEAN,
+                required=False,
+                default=True
+            ),
             openapi.Parameter(
                 'paginated',
                 openapi.IN_QUERY,
@@ -68,7 +80,7 @@ class CourseListAPIView(ListAPIView):
 
 
 class CourseDetailsAPIView(RetrieveAPIView):
-    queryset = Course.objects.filter(is_published=True, is_deleted=False)
+    queryset = Course.objects.filter(is_deleted=False)
     serializer_class = CourseDetailsSerializer
 
     @swagger_auto_schema(
@@ -94,10 +106,7 @@ class CourseDetailsAPIView(RetrieveAPIView):
 
         if not course:
             try:
-                course =  Course.objects.filter(
-                    is_published=True, 
-                    is_deleted=False
-                ).prefetch_related('modules').get(pk=course_id)
+                course =  self.queryset.prefetch_related('modules').get(pk=course_id)
                 cache.set(cache_key, course, timeout=60*10) # cache for 10 minutes
             except Course.DoesNotExist:
                 raise NotFound("Course not found")
@@ -114,13 +123,13 @@ class CreateCourseAPIView(CreateAPIView):
         responses={
             status.HTTP_201_CREATED: openapi.Response(description='Course created successfully'),
             status.HTTP_400_BAD_REQUEST: openapi.Response(description='An error occurred'),
-            status.HTTP_403_FORBIDDEN: openapi.Response(description='You are not authorized to create a course')
+            status.HTTP_401_UNAUTHORIZED: openapi.Response(description='You are not authorized to create a course')
         }
     )
     def post(self, request, *args, **kwargs):
         if request.user.is_instructor:
             return super().post(request, *args, **kwargs)
-        return Response({'error': 'You are not authorized to create a course'}, status=status.HTTP_403_FORBIDDEN)
+        return Response({'error': 'You are not authorized to create a course'}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 class UpdateCourseAPIView(UpdateAPIView):
@@ -129,7 +138,7 @@ class UpdateCourseAPIView(UpdateAPIView):
     queryset = Course.objects.filter(is_deleted=False)
 
     def get_object(self):
-        return Course.objects.get(instructor=self.request.user, pk=self.kwargs.get('pk'), is_deleted=False)
+        return self.queryset.get(instructor=self.request.user, pk=self.kwargs.get('pk'))
 
     @swagger_auto_schema(
         tags=['Course'],
@@ -137,18 +146,22 @@ class UpdateCourseAPIView(UpdateAPIView):
         responses={
             status.HTTP_200_OK: openapi.Response(description='Course updated successfully'),
             status.HTTP_400_BAD_REQUEST: openapi.Response(description='An error occurred'),
-            status.HTTP_404_NOT_FOUND: openapi.Response(description='Course not found')
+            status.HTTP_404_NOT_FOUND: openapi.Response(description='Course not found'),
+            status.HTTP_401_UNAUTHORIZED: openapi.Response(description='you are not authorized to update course')
         }
     )
     def put(self, request, *args, **kwargs):
-        try:
-            instance = self.get_object()
-            serializer = self.get_serializer(instance, data=request.data, partial=True)
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
-            return Response(serializer.data)
-        except Course.DoesNotExist:
-            return Response({'error': 'Course not found'}, status=status.HTTP_404_NOT_FOUND)
+        if request.user.is_instructor:
+            try:
+                instance = self.get_object()
+                serializer = self.get_serializer(instance, data=request.data, partial=True)
+                serializer.is_valid(raise_exception=True)
+                serializer.save()
+                return Response(serializer.data)
+            except Course.DoesNotExist:
+                return Response({'error': 'Course not found'}, status=status.HTTP_404_NOT_FOUND)
+        else:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 
 class DeleteCourseAPIView(DestroyAPIView):
@@ -156,7 +169,7 @@ class DeleteCourseAPIView(DestroyAPIView):
     queryset = Course.objects.filter(is_deleted=False)
 
     def get_object(self):
-        return Course.objects.get(instructor=self.request.user, pk=self.kwargs.get('pk'), is_deleted=False)
+        return self.queryset.get(instructor=self.request.user, pk=self.kwargs.get('pk'))
 
     @swagger_auto_schema(
         tags=['Course'],

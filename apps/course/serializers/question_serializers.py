@@ -9,7 +9,7 @@ class QuestionCreateSerializer(serializers.ModelSerializer):
         fields = [
             'quiz', 'title', 'option_1', 'option_2',
             'option_3', 'option_4', 'correct_option',
-            'explanation',
+            'explanation', 'is_published'
         ]
 
 
@@ -17,7 +17,7 @@ class QuestionListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Question
         fields = [
-            'id', 'quiz', 'title'
+            'id', 'quiz', 'title', 'is_published'
         ]
 
 
@@ -28,5 +28,6 @@ class QuestionDetailsSerializer(serializers.ModelSerializer):
             'id', 'quiz', 'title', 'option_1', 'option_2', 
             'option_3', 'option_4', 'correct_option', 
             'selected_option', 'is_correct', 'is_completed',
-            'explanation', 
+            'explanation', 'is_published',
+            'created_at', 'updated_at'
         ]
