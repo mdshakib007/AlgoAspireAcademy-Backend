@@ -9,21 +9,15 @@ class BaseModel(models.Model):
     """An abstract model with fields common to most models."""
     is_published = models.BooleanField(default=False)
     is_deleted = models.BooleanField(default=False)
+    is_completed = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
     class Meta:
         abstract = True
 
-class CompletableModel(BaseModel):
-    """An abstract model for objects that can be marked as completed."""
-    is_completed = models.BooleanField(default=False)
-    
-    class Meta:
-        abstract = True
 
-
-class Course(CompletableModel):
+class Course(BaseModel):
     code = models.CharField(max_length=10, unique=True)
     name = models.CharField(max_length=300)
     slug = models.SlugField(max_length=350, unique=True, null=True, blank=True)
@@ -55,7 +49,7 @@ class Course(CompletableModel):
         return f"{self.name}"
 
 
-class Module(CompletableModel):
+class Module(BaseModel):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='modules')
     title = models.CharField(max_length=150)
     summary = models.TextField()
@@ -74,7 +68,7 @@ class Module(CompletableModel):
         return f"{self.course.name} - {self.title}"
 
 
-class Lesson(CompletableModel):
+class Lesson(BaseModel):
     module = models.ForeignKey(Module, on_delete=models.CASCADE, related_name='lessons')
     title = models.CharField(max_length=150)
     summary = models.TextField(null=True, blank=True)
@@ -95,7 +89,7 @@ class Lesson(CompletableModel):
         return f"{self.title}"
 
 
-class Quiz(CompletableModel):
+class Quiz(BaseModel):
     lesson = models.OneToOneField(Lesson, on_delete=models.CASCADE, related_name='quiz')
     title = models.CharField(max_length=100)
 
@@ -107,7 +101,7 @@ class Quiz(CompletableModel):
         return f"{self.lesson.title}"
 
 
-class Question(CompletableModel):
+class Question(BaseModel):
     quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name='questions')
     title = models.TextField()
     option_1 = models.CharField(max_length=200)
@@ -127,7 +121,7 @@ class Question(CompletableModel):
         return f"{self.quiz.lesson.title} - {self.title[:50]}"
 
 
-class Assignment(CompletableModel):
+class Assignment(BaseModel):
     lesson = models.OneToOneField(Lesson, on_delete=models.CASCADE, related_name='assignment')
     title = models.CharField(max_length=100)
     question = models.TextField()

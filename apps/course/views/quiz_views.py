@@ -32,8 +32,6 @@ class CustomPagination(PageNumberPagination):
     page_size = 10
     max_page_size = 100
 
-
-@method_decorator(cache_page(60*60), name='dispatch')
 class QuizListAPIView(ListAPIView):
     serializer_class = QuizListSerializer
     pagination_class = CustomPagination
@@ -108,15 +106,11 @@ class QuizDetailsAPIView(RetrieveAPIView):
         
     def get_object(self):
         quiz_id = self.kwargs.get('pk')
-        cache_key = f"quiz_{quiz_id}"
-        quiz = cache.get(cache_key)
 
-        if not quiz:
-            try:
-                quiz = self.queryset.prefetch_related('questions').get(pk=quiz_id)
-                cache.set(cache_key, quiz, timeout=60*10)
-            except Quiz.DoesNotExist:
-                raise NotFound("Quiz not found")
+        try:
+            quiz = self.queryset.prefetch_related('questions').get(pk=quiz_id)
+        except Quiz.DoesNotExist:
+            raise NotFound("Quiz not found")
         
         return quiz
 

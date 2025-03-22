@@ -32,8 +32,6 @@ class CustomPagination(PageNumberPagination):
     page_size = 10
     max_page_size = 100
 
-
-@method_decorator(cache_page(60*60), name='dispatch')
 class AssignmentListAPIView(ListAPIView):
     serializer_class = AssignmentListSerializer
     pagination_class = CustomPagination
@@ -108,15 +106,11 @@ class AssignmentDetailsAPIView(RetrieveAPIView):
         
     def get_object(self):
         assignment_id = self.kwargs.get('pk')
-        cache_key = f"assignment_{assignment_id}"
-        assignment = cache.get(cache_key)
 
-        if not assignment:
-            try:
-                assignment = self.queryset.get(pk=assignment_id)
-                cache.set(cache_key, assignment, timeout=60*10)
-            except Assignment.DoesNotExist:
-                raise NotFound("Assignment not found")
+        try:
+            assignment = self.queryset.get(pk=assignment_id)
+        except Assignment.DoesNotExist:
+            raise NotFound("Assignment not found")
         
         return assignment
 

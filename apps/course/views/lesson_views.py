@@ -32,8 +32,6 @@ class CustomPagination(PageNumberPagination):
     page_size = 10
     max_page_size = 100
 
-
-@method_decorator(cache_page(60*60), name='dispatch')
 class LessonListAPIView(ListAPIView):
     serializer_class = LessonListSerializer
     pagination_class = CustomPagination
@@ -42,12 +40,15 @@ class LessonListAPIView(ListAPIView):
         queryset = Lesson.objects.filter(is_deleted=False)
         module_id = self.request.query_params.get('module_id')
         is_published = self.request.query_params.get('is_published')
+        lecture_type = self.request.query_params.get('lecture_type')
 
         if module_id:
             queryset = queryset.filter(module=module_id)
         if is_published:
             is_published = is_published.lower() in ['true', '1', 'yes']
             queryset = queryset.filter(is_published=is_published)
+        if lecture_type:
+            queryset = queryset.filter(lecture_type=lecture_type)
         return queryset
     
     @swagger_auto_schema(
@@ -58,6 +59,13 @@ class LessonListAPIView(ListAPIView):
                 openapi.IN_QUERY,
                 description='Filter by module id',
                 type=openapi.TYPE_INTEGER,
+                required=False,
+            ),
+            openapi.Parameter(
+                'lecture_type',
+                openapi.IN_QUERY,
+                description='Filter by module id',
+                type=openapi.TYPE_STRING,
                 required=False,
             ),
             openapi.Parameter(
@@ -108,15 +116,11 @@ class LessonDetailsAPIView(RetrieveAPIView):
         
     def get_object(self):
         lesson_id = self.kwargs.get('pk')
-        cache_key = f"lesson_{lesson_id}"
-        lesson = cache.get(cache_key)
 
-        if not lesson:
-            try:
-                lesson = self.queryset.get(pk=lesson_id)
-                cache.set(cache_key, lesson, timeout=60*10)
-            except Lesson.DoesNotExist:
-                raise NotFound("Lesson not found")
+        try:
+            lesson = self.queryset.get(pk=lesson_id)
+        except Lesson.DoesNotExist:
+            raise NotFound("Lesson not found")
         
         return lesson
 

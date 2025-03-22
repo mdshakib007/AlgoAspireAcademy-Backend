@@ -32,7 +32,6 @@ class CustomPagination(PageNumberPagination):
     page_size = 10
     max_page_size = 100
 
-@method_decorator(cache_page(60*60), name='dispatch') # caches for 1 hour
 class CourseListAPIView(ListAPIView):
     serializer_class = CourseListSerializer 
     pagination_class = CustomPagination
@@ -101,16 +100,12 @@ class CourseDetailsAPIView(RetrieveAPIView):
 
     def get_object(self):
         course_id = self.kwargs.get('pk')
-        cache_key = f"course_{course_id}"
-        course = cache.get(cache_key)
 
-        if not course:
-            try:
-                course =  self.queryset.prefetch_related('modules').get(pk=course_id)
-                cache.set(cache_key, course, timeout=60*10) # cache for 10 minutes
-            except Course.DoesNotExist:
-                raise NotFound("Course not found")
-        
+        try:
+            course =  self.queryset.prefetch_related('modules').get(pk=course_id)
+        except Course.DoesNotExist:
+            raise NotFound("Course not found")
+    
         return course
 
 

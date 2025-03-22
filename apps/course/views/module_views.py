@@ -32,7 +32,6 @@ class CustomPagination(PageNumberPagination):
     page_size = 10
     max_page_size = 100
 
-@method_decorator(cache_page(60*60), name='dispatch')
 class ModuleListAPIView(ListAPIView):
     serializer_class = ModuleListSerializer
     pagination_class = CustomPagination
@@ -112,15 +111,11 @@ class ModuleDetailsAPIView(RetrieveAPIView):
 
     def get_object(self):
         module_id = self.kwargs.get('pk')
-        cache_key = f"module_{module_id}"
-        module = cache.get(cache_key)
 
-        if not module:
-            try:
-                module = self.queryset.prefetch_related('lessons').get(pk=module_id)
-                cache.set(cache_key, module, timeout=60*10) # cache for 10 minutes
-            except Module.DoesNotExist:
-                raise NotFound("Module not found")
+        try:
+            module = self.queryset.prefetch_related('lessons').get(pk=module_id)
+        except Module.DoesNotExist:
+            raise NotFound("Module not found")
         
         return module
 

@@ -7,7 +7,7 @@ class AssignmentCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Assignment
         fields = [
-            'lesson', 'question', 'total_mark', 'is_published',
+            'lesson', 'title', 'question', 'total_mark', 'is_published',
         ]
 
 
