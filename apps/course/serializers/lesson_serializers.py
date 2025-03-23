@@ -3,7 +3,7 @@ from rest_framework import serializers
 from apps.course.models import Module, Lesson, Quiz, Assignment
 from .quiz_serializers import QuizDetailsSerializer
 from .assignment_serializers import AssignmentDetailsSerializer
-
+ 
 
 class LessonCreateSerializer(serializers.ModelSerializer):
     class Meta:

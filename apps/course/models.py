@@ -2,14 +2,12 @@ from django.db import models
 from django.utils.text import slugify
 from django.contrib.auth import get_user_model
 
-from apps.course.constants import LectureType
+from apps.course.constants import LectureType, OptionChoices
 
 
 class BaseModel(models.Model):
     """An abstract model with fields common to most models."""
     is_published = models.BooleanField(default=False)
-    is_deleted = models.BooleanField(default=False)
-    is_completed = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
@@ -25,14 +23,13 @@ class Course(BaseModel):
     description = models.TextField()
     instructor = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='courses')
 
-    is_enrolled = models.BooleanField(default=False)
-    completed_modules_count = models.PositiveIntegerField(default=0)
-    completed_assignments_count = models.PositiveIntegerField(default=0)
-    completed_quizzes_count = models.PositiveIntegerField(default=0)
+    module_count = models.PositiveIntegerField(default=0)
+    lesson_count = models.PositiveIntegerField(default=0)
+    assignment_count = models.PositiveIntegerField(default=0)
+    quiz_count = models.PositiveIntegerField(default=0)
 
     def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify(f"{self.code}-{self.name}")
+        self.slug = slugify(f"{self.code}-{self.name}")
         super().save(*args, **kwargs)
 
     class Meta:
@@ -40,11 +37,10 @@ class Course(BaseModel):
         indexes = [
             models.Index(fields=['code']), # quick lookup by course code.
             models.Index(fields=['is_published']), # If filtering on published courses.
-            models.Index(fields=['is_deleted']), # If soft-deleted courses are frequently filtered out.
             models.Index(fields=['instructor']),  # Optimize queries filtering by instructor
         ]
         ordering = ['created_at']
-    
+
     def __str__(self):
         return f"{self.name}"
 
@@ -53,13 +49,12 @@ class Module(BaseModel):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='modules')
     title = models.CharField(max_length=150)
     summary = models.TextField()
-    completed_lessons_count = models.PositiveIntegerField(default=0)
+    lesson_count = models.PositiveIntegerField(default=0)
 
     class Meta:
         db_table = 'modules'
         indexes = [
             models.Index(fields=['course']),
-            models.Index(fields=['is_deleted']),
             models.Index(fields=['is_published'])
         ]
         ordering = ['created_at']
@@ -80,7 +75,7 @@ class Lesson(BaseModel):
         db_table = 'lessons'
         indexes = [
             models.Index(fields=['module']),
-            models.Index(fields=['is_completed']),
+            models.Index(fields=['is_published']),
             models.Index(fields=['lecture_type']),
         ]
         ordering = ['created_at']
@@ -95,6 +90,9 @@ class Quiz(BaseModel):
 
     class Meta:
         db_table = 'quizzes'
+        indexes = [
+            models.Index(fields=['lesson'])
+        ]
         ordering = ['created_at']
 
     def __str__(self):
@@ -104,13 +102,11 @@ class Quiz(BaseModel):
 class Question(BaseModel):
     quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name='questions')
     title = models.TextField()
-    option_1 = models.CharField(max_length=200)
-    option_2 = models.CharField(max_length=200)
-    option_3 = models.CharField(max_length=200)
-    option_4 = models.CharField(max_length=200)
-    correct_option = models.PositiveIntegerField(default=1)
-    selected_option = models.PositiveIntegerField(null=True, blank=True)
-    is_correct = models.BooleanField(null=True, blank=True)
+    option_a = models.CharField(max_length=200)
+    option_b = models.CharField(max_length=200)
+    option_c = models.CharField(max_length=200)
+    option_d = models.CharField(max_length=200)
+    correct_option = models.CharField(max_length=1, choices=OptionChoices.choices)
     explanation = models.TextField()
 
     class Meta:
@@ -125,9 +121,7 @@ class Assignment(BaseModel):
     lesson = models.OneToOneField(Lesson, on_delete=models.CASCADE, related_name='assignment')
     title = models.CharField(max_length=100)
     question = models.TextField()
-    answer = models.URLField() # here student submits their answer
     total_mark = models.PositiveIntegerField(default=10)
-    obtained_mark = models.PositiveIntegerField(null=True, blank=True)
 
     class Meta:
         db_table = 'assignments'

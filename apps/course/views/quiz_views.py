@@ -13,10 +13,7 @@ from rest_framework.exceptions import NotFound
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView, DestroyAPIView, UpdateAPIView
 
-from apps.course.models import (
-    Course, Module, Lesson, Quiz,
-    Question, Assignment,
-)
+from apps.course.models import Quiz
 from apps.course.serializers import (
     QuizCreateSerializer,
     QuizDetailsSerializer,
@@ -37,7 +34,7 @@ class QuizListAPIView(ListAPIView):
     pagination_class = CustomPagination
 
     def get_queryset(self):
-        queryset = Quiz.objects.filter(is_deleted=False)
+        queryset = Quiz.objects.all()
         lesson_id = self.request.query_params.get('lesson_id')
         is_published = self.request.query_params.get('is_published')
 
@@ -85,7 +82,7 @@ class QuizListAPIView(ListAPIView):
 
 
 class QuizDetailsAPIView(RetrieveAPIView):
-    queryset = Quiz.objects.filter(is_deleted=False)
+    queryset = Quiz.objects.all()
     serializer_class = QuizDetailsSerializer
 
     @swagger_auto_schema(
@@ -136,7 +133,7 @@ class CreateQuizAPIView(CreateAPIView):
 class UpdateQuizAPIView(UpdateAPIView):
     http_method_names = ['put']
     serializer_class = QuizCreateSerializer
-    queryset = Quiz.objects.filter(is_deleted=False)
+    queryset = Quiz.objects.all()
 
     def get_object(self):
         return self.queryset.get(pk=self.kwargs.get('pk'))
@@ -167,7 +164,7 @@ class UpdateQuizAPIView(UpdateAPIView):
 
 class DeleteQuizAPIView(DestroyAPIView):
     serializer_class = QuizCreateSerializer
-    queryset = Quiz.objects.filter(is_deleted=False)
+    queryset = Quiz.objects.all()
 
     def get_object(self):
         return self.queryset.get(pk=self.kwargs.get('pk'))
@@ -189,9 +186,7 @@ class DeleteQuizAPIView(DestroyAPIView):
     def destroy(self, request, *args, **kwargs):
         try:
             instance = self.get_object()
-            instance.is_deleted = True
-            instance.is_published = False 
-            instance.save()
+            instance.delete()
             return Response({'success': 'Quiz deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
         except Quiz.DoesNotExist:
             return Response({'error': 'Quiz not found'}, status=status.HTTP_404_NOT_FOUND)

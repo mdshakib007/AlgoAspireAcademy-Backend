@@ -13,10 +13,7 @@ from rest_framework.exceptions import NotFound
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView, DestroyAPIView, UpdateAPIView
 
-from apps.course.models import (
-    Course, Module, Lesson, Quiz,
-    Question, Assignment,
-)
+from apps.course.models import Question
 from apps.course.serializers import (
     QuestionCreateSerializer,
     QuestionDetailsSerializer,
@@ -37,7 +34,7 @@ class QuestionListAPIView(ListAPIView):
     pagination_class = CustomPagination
 
     def get_queryset(self):
-        queryset = Question.objects.filter(is_deleted=False)
+        queryset = Question.objects.all()
         quiz_id = self.request.query_params.get('quiz_id')
         is_published = self.request.query_params.get('is_published')
 
@@ -85,7 +82,7 @@ class QuestionListAPIView(ListAPIView):
 
 
 class QuestionDetailsAPIView(RetrieveAPIView):
-    queryset = Question.objects.filter(is_deleted=False)
+    queryset = Question.objects.all()
     serializer_class = QuestionDetailsSerializer
 
     @swagger_auto_schema(
@@ -136,7 +133,7 @@ class CreateQuestionAPIView(CreateAPIView):
 class UpdateQuestionAPIView(UpdateAPIView):
     http_method_names = ['put']
     serializer_class = QuestionCreateSerializer
-    queryset = Question.objects.filter(is_deleted=False)
+    queryset = Question.objects.all()
 
     def get_object(self):
         return self.queryset.get(pk=self.kwargs.get('pk'))
@@ -167,7 +164,7 @@ class UpdateQuestionAPIView(UpdateAPIView):
 
 class DeleteQuestionAPIView(DestroyAPIView):
     serializer_class = QuestionCreateSerializer
-    queryset = Question.objects.filter(is_deleted=False)
+    queryset = Question.objects.all()
 
     def get_object(self):
         return self.queryset.get(pk=self.kwargs.get('pk'))
@@ -189,9 +186,7 @@ class DeleteQuestionAPIView(DestroyAPIView):
     def destroy(self, request, *args, **kwargs):
         try:
             instance = self.get_object()
-            instance.is_deleted = True
-            instance.is_published = False 
-            instance.save()
+            instance.delete()
             return Response({'success': 'Question deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
         except Question.DoesNotExist:
             return Response({'error': 'Question not found'}, status=status.HTTP_404_NOT_FOUND)

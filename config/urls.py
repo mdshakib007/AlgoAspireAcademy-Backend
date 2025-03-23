@@ -45,7 +45,7 @@ urlpatterns = [
     path('api/forum/', include('apps.forum.urls')),
     path('api/gamification/', include('apps.gamification.urls')),
     path('api/note/', include('apps.note.urls')),
-    path('api/quiz/', include('apps.quiz.urls')),
+    # path('api/quiz/', include('apps.quiz.urls')),
 ]
 
 if settings.DEBUG and swagger_url_patterns:

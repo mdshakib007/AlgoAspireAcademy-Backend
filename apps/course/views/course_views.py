@@ -13,10 +13,7 @@ from rest_framework.exceptions import NotFound
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView, DestroyAPIView, UpdateAPIView
 
-from apps.course.models import (
-    Course, Module, Lesson, Quiz,
-    Question, Assignment,
-)
+from apps.course.models import Course
 from apps.course.serializers import (
     CourseDetailsSerializer,
     CourseListSerializer,
@@ -37,7 +34,7 @@ class CourseListAPIView(ListAPIView):
     pagination_class = CustomPagination
 
     def get_queryset(self):
-        queryset = Course.objects.filter(is_deleted=False)
+        queryset = Course.objects.all()
         is_published = self.request.query_params.get('is_published')
 
         if is_published:
@@ -79,7 +76,7 @@ class CourseListAPIView(ListAPIView):
 
 
 class CourseDetailsAPIView(RetrieveAPIView):
-    queryset = Course.objects.filter(is_deleted=False)
+    queryset = Course.objects.all()
     serializer_class = CourseDetailsSerializer
 
     @swagger_auto_schema(
@@ -105,7 +102,7 @@ class CourseDetailsAPIView(RetrieveAPIView):
             course =  self.queryset.prefetch_related('modules').get(pk=course_id)
         except Course.DoesNotExist:
             raise NotFound("Course not found")
-    
+
         return course
 
 
@@ -130,7 +127,7 @@ class CreateCourseAPIView(CreateAPIView):
 class UpdateCourseAPIView(UpdateAPIView):
     http_method_names = ['put']
     serializer_class = CreateCourseSerializer
-    queryset = Course.objects.filter(is_deleted=False)
+    queryset = Course.objects.all()
 
     def get_object(self):
         return self.queryset.get(instructor=self.request.user, pk=self.kwargs.get('pk'))
@@ -161,7 +158,7 @@ class UpdateCourseAPIView(UpdateAPIView):
 
 class DeleteCourseAPIView(DestroyAPIView):
     serializer_class = CreateCourseSerializer
-    queryset = Course.objects.filter(is_deleted=False)
+    queryset = Course.objects.all()
 
     def get_object(self):
         return self.queryset.get(instructor=self.request.user, pk=self.kwargs.get('pk'))
@@ -180,9 +177,7 @@ class DeleteCourseAPIView(DestroyAPIView):
     def destroy(self, request, *args, **kwargs):
         try:
             instance = self.get_object()
-            instance.is_deleted = True
-            instance.is_published = False 
-            instance.save()
+            instance.delete()
             return Response({'success': 'Course deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
         except Course.DoesNotExist:
             return Response({'error': 'Course not found'}, status=status.HTTP_404_NOT_FOUND)

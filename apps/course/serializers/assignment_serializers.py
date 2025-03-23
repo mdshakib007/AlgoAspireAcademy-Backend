@@ -24,7 +24,6 @@ class AssignmentDetailsSerializer(serializers.ModelSerializer):
         model = Assignment
         fields = [
             'id', 'lesson', 'title', 'question',
-            'answer', 'total_mark', 'obtained_mark',
-            'is_completed', 'is_published', 
+            'total_mark', 'is_published', 
             'created_at', 'updated_at',
         ]

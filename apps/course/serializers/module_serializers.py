@@ -8,16 +8,17 @@ class ModuleCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Module
         fields = [
-            'course', 'title', 'summary', 'is_published',
+            'course', 'title', 'summary', 
+            'lesson_count', 'is_published',
         ]
-        
+
 
 class ModuleListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Module
         fields = [
-            'id', 'course', 'title', 'is_completed',
-            'completed_lessons_count', 'is_published'
+            'id', 'course', 'title',
+            'lesson_count', 'is_published'
         ]
 
 
@@ -27,7 +28,7 @@ class ModuleDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Module
         fields = [
-            'id', 'course', 'title', 'summary', 'is_completed', 
-            'completed_lessons_count', 'lessons',
+            'id', 'course', 'title', 'summary',
+            'lesson_count', 'lessons',
             'is_published', 'created_at', 'updated_at',
         ]

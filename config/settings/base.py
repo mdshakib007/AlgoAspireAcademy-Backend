@@ -35,7 +35,7 @@ PROJECT_APPS = [
     'apps.account.apps.AccountConfig',
     'apps.course.apps.CourseConfig',
     'apps.note.apps.NoteConfig',
-    'apps.quiz.apps.QuizConfig',
+    'apps.enrollment.apps.EnrollmentConfig',
     'apps.gamification.apps.GamificationConfig',
     'apps.forum.apps.ForumConfig',
 ]

@@ -13,10 +13,7 @@ from rest_framework.exceptions import NotFound
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView, DestroyAPIView, UpdateAPIView
 
-from apps.course.models import (
-    Module, Lesson, Quiz,
-    Question, Assignment,
-)
+from apps.course.models import Module
 from apps.course.serializers import (
     ModuleListSerializer,
     ModuleCreateSerializer,
@@ -37,7 +34,7 @@ class ModuleListAPIView(ListAPIView):
     pagination_class = CustomPagination
 
     def get_queryset(self):
-        queryset = Module.objects.filter(is_deleted=False)
+        queryset = Module.objects.all()
 
         course_id = self.request.query_params.get('course_id')
         is_published = self.request.query_params.get('is_published')
@@ -90,7 +87,7 @@ class ModuleListAPIView(ListAPIView):
 
 
 class ModuleDetailsAPIView(RetrieveAPIView):
-    queryset = Module.objects.filter(is_deleted=False)
+    queryset = Module.objects.all()
     serializer_class = ModuleDetailSerializer
 
     @swagger_auto_schema(
@@ -141,7 +138,7 @@ class CreateModuleAPIView(CreateAPIView):
 class UpdateModuleAPIView(UpdateAPIView):
     http_method_names = ['put']
     serializer_class = ModuleCreateSerializer
-    queryset = Module.objects.filter(is_deleted=False)
+    queryset = Module.objects.all()
 
     def get_object(self):
         return self.queryset.get(pk=self.kwargs.get('pk'))
@@ -172,7 +169,7 @@ class UpdateModuleAPIView(UpdateAPIView):
 
 class DeleteModuleAPIView(DestroyAPIView):
     serializer_class = ModuleCreateSerializer
-    queryset = Module.objects.filter(is_deleted=False)
+    queryset = Module.objects.all()
 
     def get_object(self):
         return self.queryset.get(pk=self.kwargs.get('pk'))
@@ -194,9 +191,7 @@ class DeleteModuleAPIView(DestroyAPIView):
     def destroy(self, request, *args, **kwargs):
         try:
             instance = self.get_object()
-            instance.is_deleted = True
-            instance.is_published = False 
-            instance.save()
+            instance.delete()
             return Response({'success': 'Module deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
         except Module.DoesNotExist:
             return Response({'error': 'Module not found'}, status=status.HTTP_404_NOT_FOUND)

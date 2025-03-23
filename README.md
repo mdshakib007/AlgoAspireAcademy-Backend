@@ -98,30 +98,84 @@ algoaspire_academy/
 ```
  [User]
    └── user_id (PK)
-   └── name
+   └── username
    └── email
+   └── full_name
+   └── profile_picture
+   └── date_of_birth
+   └── phone_number
+   └── t_shirt_size
+   └── country
+   └── city
+   └── organization
+   └── is_admin
+   └── is_instructor
+   └── is_verified
+   └── is_deleted
+   └── is_active
          │
          └─< Enrollment >─┐
- [Course]                  │   [User-Course Enrollment]
-   └── course_id (PK)      │   └── user_id (FK)
-   └── title             ──┘   └── course_id (FK)
+ [Course]                 │   [User-Course Enrollment]
+   └── course_id (PK)     │   └── user_id (FK)
+   └── code             ──┘   └── course_id (FK)
+   └── name
+   └── slug
+   └── image
    └── description
+   └── instructor (FK)
+   └── is_enrolled
+   └── completed_modules_count
+   └── completed_assignments_count
+   └── completed_quizzes_count
+
+ [Module]
+   └── module_id (PK)
+   └── course_id (FK)
+   └── title
+   └── summary
+   └── completed_lessons_count
 
  [Lesson]
    └── lesson_id (PK)
+   └── module_id (FK)
    └── title
-   └── course_id (FK)
+   └── summary
+   └── lecture_type [text, video, quiz, assignment]
+   └── video_url
+   └── text_editorial
 
- [Video]
-   └── video_id (PK)
-   └── url
-   └── lesson_id (FK)
+ [Quiz]
+   └── quiz_id (PK)
+   └── lesson_id (One to One)
+   └── title
+
+ [Question]
+   └── question_id (PK)
+   └── quiz_id (FK)
+   └── title
+   └── option_1
+   └── option_2
+   └── option_3
+   └── option_4
+   └── correct_option
+   └── selected_option
+   └── is_correct
+   └── explanation
+
+ [Assignment]
+   └── assignment_id (PK)
+   └── lesson_id (One to One)
+   └── title
+   └── question
+   └── answer
+   └── total_mark
+   └── obtained_mark
 
  [Note]
    └── note_id (PK)
    └── content
    └── user_id (FK)
-   └── video_id (FK)
+   └── lesson_id (FK)
 ```
 
 ---

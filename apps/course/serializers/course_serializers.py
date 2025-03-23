@@ -8,7 +8,10 @@ class CreateCourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
         fields = [
-            'code', 'name', 'image', 'description', 'is_published',
+            'code', 'name', 
+            'image', 'description', 'module_count',
+            'lesson_count', 'assignment_count', 
+            'quiz_count', 'is_published',
         ]
     
     def create(self, validated_data):
@@ -24,7 +27,7 @@ class CourseListSerializer(serializers.ModelSerializer):
         model = Course 
         fields = [
             'id', 'code', 'name', 'slug', 'image',
-            'instructor', 'is_enrolled', 'is_published',
+            'instructor', 'is_published',
         ]
 
 
@@ -35,8 +38,7 @@ class CourseDetailsSerializer(serializers.ModelSerializer):
         model = Course
         fields = [
             'id', 'code', 'name', 'slug', 'image', 'description', 
-            'instructor', 'is_enrolled', 'completed_modules_count', 
-            'completed_assignments_count', 'completed_quizzes_count', 
-            'modules', 
+            'instructor', 'module_count', 'lesson_count', 
+            'assignment_count', 'quiz_count',
             'is_published', 'created_at', 'updated_at',
         ]

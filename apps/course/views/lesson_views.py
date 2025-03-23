@@ -13,10 +13,7 @@ from rest_framework.exceptions import NotFound
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView, DestroyAPIView, UpdateAPIView
 
-from apps.course.models import (
-    Course, Module, Lesson, Quiz,
-    Question, Assignment,
-)
+from apps.course.models import Lesson
 from apps.course.serializers import (
     LessonDetailsSerializer,
     LessonListSerializer,
@@ -37,7 +34,7 @@ class LessonListAPIView(ListAPIView):
     pagination_class = CustomPagination
 
     def get_queryset(self):
-        queryset = Lesson.objects.filter(is_deleted=False)
+        queryset = Lesson.objects.all()
         module_id = self.request.query_params.get('module_id')
         is_published = self.request.query_params.get('is_published')
         lecture_type = self.request.query_params.get('lecture_type')
@@ -95,7 +92,7 @@ class LessonListAPIView(ListAPIView):
 
 
 class LessonDetailsAPIView(RetrieveAPIView):
-    queryset = Lesson.objects.filter(is_deleted=False)
+    queryset = Lesson.objects.all()
     serializer_class = LessonDetailsSerializer
 
     @swagger_auto_schema(
@@ -146,7 +143,7 @@ class CreateLessonAPIView(CreateAPIView):
 class UpdateLessonAPIView(UpdateAPIView):
     http_method_names = ['put']
     serializer_class = LessonCreateSerializer
-    queryset = Lesson.objects.filter(is_deleted=False)
+    queryset = Lesson.objects.all()
 
     def get_object(self):
         return self.queryset.get(pk=self.kwargs.get('pk'))
@@ -177,7 +174,7 @@ class UpdateLessonAPIView(UpdateAPIView):
 
 class DeleteLessonAPIView(DestroyAPIView):
     serializer_class = LessonCreateSerializer
-    queryset = Lesson.objects.filter(is_deleted=False)
+    queryset = Lesson.objects.all()
 
     def get_object(self):
         return self.queryset.get(pk=self.kwargs.get('pk'))
@@ -199,9 +196,7 @@ class DeleteLessonAPIView(DestroyAPIView):
     def destroy(self, request, *args, **kwargs):
         try:
             instance = self.get_object()
-            instance.is_deleted = True
-            instance.is_published = False 
-            instance.save()
+            instance.delete()
             return Response({'success': 'Lesson deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
         except Lesson.DoesNotExist:
             return Response({'error': 'Lesson not found'}, status=status.HTTP_404_NOT_FOUND)
