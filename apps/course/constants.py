@@ -1,13 +1,13 @@
 from django.db import models 
 
 class LectureType(models.TextChoices):
-    VIDEO = 'video', 'Video'
-    TEXT = 'text', 'Text'
-    QUIZ = 'quiz', 'Quiz'
-    ASSIGNMENT = 'assignment', 'Assignment'
+    VIDEO = 'Video', 'Video'
+    TEXT = 'Text', 'Text'
+    QUIZ = 'Quiz', 'Quiz'
+    ASSIGNMENT = 'Assignment', 'Assignment'
 
 class OptionChoices(models.TextChoices):
-    A = 'a', 'A'
-    B = 'b', 'B'
-    C = 'c', 'C'
-    D = 'd', 'D'
+    A = 'A', 'A'
+    B = 'B', 'B'
+    C = 'C', 'C'
+    D = 'D', 'D'

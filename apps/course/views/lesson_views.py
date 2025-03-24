@@ -61,7 +61,7 @@ class LessonListAPIView(ListAPIView):
             openapi.Parameter(
                 'lecture_type',
                 openapi.IN_QUERY,
-                description='Filter by module id',
+                description='Filter by lecture type',
                 type=openapi.TYPE_STRING,
                 required=False,
             ),

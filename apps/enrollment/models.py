@@ -5,18 +5,27 @@ from apps.course.models import Course, Module, Lesson
 
 student = get_user_model()
 
+
 class Enrollment(models.Model):
     user = models.ForeignKey(student, on_delete=models.CASCADE, related_name='enrollments')
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='enrollments')
     enrolled_at = models.DateTimeField(auto_now_add=True)
     is_completed = models.BooleanField(default=False)
+    completed_percentage = models.DecimalField(default=0.0, decimal_places=2, max_digits=5) # (completed_lesson / total_lesson) * 100
     completed_at = models.DateTimeField(null=True, blank=True)
+    estimate_completion_date = models.DateTimeField(null=True, blank=True)
+    completed_lesson_count = models.PositiveIntegerField(default=0)
+    completed_quiz_count = models.PositiveIntegerField(default=0)
+    completed_assignment_count = models.PositiveIntegerField(default = 0)
+    is_active = models.BooleanField(default=True)
 
     class Meta:
         db_table = 'Enrollments'
+        unique_together = ('user', 'course', 'is_active')
         indexes = [
             models.Index(fields=['user']),
             models.Index(fields=['course']),
+            models.Index(fields=['is_active']),
             models.Index(fields=['user', 'course']),
         ]
         verbose_name = "Enrollment"
@@ -26,7 +35,7 @@ class Enrollment(models.Model):
 class LessonCompletion(models.Model):
     enrollment = models.ForeignKey(Enrollment, on_delete=models.CASCADE, related_name='lesson_completions')
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, related_name='lesson_completions')
-    completed_at = models.DateTimeField(null=True, blank=True)
+    completed_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         unique_together = ('enrollment', 'lesson')
@@ -38,19 +47,3 @@ class LessonCompletion(models.Model):
         verbose_name = "Lesson Completion"
         verbose_name_plural = "Lesson Completions"
         db_table = 'Lesson Completions'
-
-
-class ModuleCompletion(models.Model):
-    enrollment = models.ForeignKey(Enrollment, on_delete=models.CASCADE, related_name='module_completions')
-    module = models.ForeignKey(Module, on_delete=models.CASCADE, related_name='module_completions')
-    completed_at = models.DateTimeField(null=True, blank=True)
-
-    class Meta:
-        indexes = [
-            models.Index(fields=['enrollment']),
-            models.Index(fields=['module']),
-            models.Index(fields=['enrollment', 'module']),
-        ]
-        verbose_name = "Module Completion"
-        verbose_name_plural = "Module Completions"
-        db_table = 'Module Completions'

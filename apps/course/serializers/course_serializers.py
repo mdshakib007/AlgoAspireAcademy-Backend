@@ -39,6 +39,6 @@ class CourseDetailsSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'code', 'name', 'slug', 'image', 'description', 
             'instructor', 'module_count', 'lesson_count', 
-            'assignment_count', 'quiz_count',
+            'assignment_count', 'quiz_count', 'modules',
             'is_published', 'created_at', 'updated_at',
         ]
