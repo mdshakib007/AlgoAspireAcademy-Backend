@@ -42,9 +42,8 @@ urlpatterns = [
 
     path('api/account/', include('apps.account.urls')),
     path('api/course/', include('apps.course.urls')),
-    path('api/forum/', include('apps.forum.urls')),
+    path('api/discussion/', include('apps.discussion.urls')),
     path('api/gamification/', include('apps.gamification.urls')),
-    path('api/note/', include('apps.note.urls')),
     path('api/enrollment/', include('apps.enrollment.urls')),
 ]
 

@@ -3,8 +3,8 @@ from apps.enrollment.models import Enrollment, LessonCompletion
 
 @admin.register(Enrollment)
 class EnrollmentAdmin(admin.ModelAdmin):
-    list_display = ('user', 'course', 'enrolled_at', 'completed_percentage', 'is_completed', 'is_active')
-    list_filter = ('is_completed', 'is_active', 'enrolled_at', 'course')
+    list_display = ('user', 'course', 'enrolled_at', 'completed_percentage', 'is_completed')
+    list_filter = ('is_completed', 'enrolled_at', 'course')
     search_fields = ('user__username', 'user__email', 'course__title')
     readonly_fields = ('enrolled_at', 'completed_percentage', 'completed_at', 'estimate_completion_date')
     list_per_page = 20

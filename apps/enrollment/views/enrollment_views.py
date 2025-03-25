@@ -26,15 +26,11 @@ class EnrollmentListAPIView(ListAPIView):
         queryset = Enrollment.objects.all()
         user_id = self.request.query_params.get('user_id')
         course_id = self.request.query_params.get('course_id')
-        is_active = self.request.query_params.get('is_active')
 
         if user_id:
             queryset = queryset.filter(user=user_id)
         if course_id:
             queryset = queryset.filter(course=course_id)
-        if is_active:
-            active = is_active.lower() == 'true'
-            queryset = queryset.filter(is_active=active)
         return queryset
 
     @swagger_auto_schema(
@@ -53,14 +49,6 @@ class EnrollmentListAPIView(ListAPIView):
                 description='Filter by course id',
                 type=openapi.TYPE_INTEGER,
                 required=False
-            ),
-            openapi.Parameter(
-                'is_active',
-                openapi.IN_QUERY,
-                description='Filter by active',
-                type=openapi.TYPE_BOOLEAN,
-                required=False,
-                default=True,
             ),
             openapi.Parameter(
                 'paginated',

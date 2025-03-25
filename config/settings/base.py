@@ -34,10 +34,9 @@ THIRD_PARTY_APPS = [
 PROJECT_APPS = [
     'apps.account.apps.AccountConfig',
     'apps.course.apps.CourseConfig',
-    'apps.note.apps.NoteConfig',
+    'apps.discussion.apps.DiscussionConfig',
     'apps.enrollment.apps.EnrollmentConfig',
     'apps.gamification.apps.GamificationConfig',
-    'apps.forum.apps.ForumConfig',
 ]
 
 INSTALLED_APPS = DJANGO_DEFAULT_APPS + THIRD_PARTY_APPS + PROJECT_APPS

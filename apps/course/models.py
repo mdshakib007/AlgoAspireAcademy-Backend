@@ -27,6 +27,7 @@ class Course(BaseModel):
     lesson_count = models.PositiveIntegerField(default=0)
     assignment_count = models.PositiveIntegerField(default=0)
     quiz_count = models.PositiveIntegerField(default=0)
+    enrolled = models.PositiveIntegerField(default=0)
 
     def save(self, *args, **kwargs):
         self.slug = slugify(f"{self.code}-{self.name}")

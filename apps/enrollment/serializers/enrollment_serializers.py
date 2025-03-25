@@ -10,12 +10,11 @@ class EnrollmentSerializer(serializers.ModelSerializer):
             'is_completed', 'completed_percentage', 
             'completed_at', 'estimate_completion_date',
             'completed_lesson_count', 'completed_quiz_count',
-            'completed_assignment_count', 'is_active'
+            'completed_assignment_count'
         ]
         read_only_fields = [
             'user', 'enrolled_at', 'is_completed',
             'completed_percentage', 'completed_at',
             'estimate_completion_date', 'completed_lesson_count',
             'completed_quiz_count', 'completed_assignment_count',
-            'is_active'
         ]

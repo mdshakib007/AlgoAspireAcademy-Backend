@@ -27,7 +27,7 @@ class CourseListSerializer(serializers.ModelSerializer):
         model = Course 
         fields = [
             'id', 'code', 'name', 'slug', 'image',
-            'instructor', 'is_published',
+            'instructor', 'enrolled', 'is_published',
         ]
 
 
@@ -39,6 +39,6 @@ class CourseDetailsSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'code', 'name', 'slug', 'image', 'description', 
             'instructor', 'module_count', 'lesson_count', 
-            'assignment_count', 'quiz_count', 'modules',
+            'assignment_count', 'quiz_count', 'modules', 'enrolled',
             'is_published', 'created_at', 'updated_at',
         ]

@@ -17,15 +17,13 @@ class Enrollment(models.Model):
     completed_lesson_count = models.PositiveIntegerField(default=0)
     completed_quiz_count = models.PositiveIntegerField(default=0)
     completed_assignment_count = models.PositiveIntegerField(default = 0)
-    is_active = models.BooleanField(default=True)
 
     class Meta:
         db_table = 'Enrollments'
-        unique_together = ('user', 'course', 'is_active')
+        unique_together = ('user', 'course')
         indexes = [
             models.Index(fields=['user']),
             models.Index(fields=['course']),
-            models.Index(fields=['is_active']),
             models.Index(fields=['user', 'course']),
         ]
         verbose_name = "Enrollment"
