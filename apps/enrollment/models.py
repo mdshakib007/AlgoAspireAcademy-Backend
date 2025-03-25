@@ -35,10 +35,15 @@ class Enrollment(models.Model):
 class LessonCompletion(models.Model):
     enrollment = models.ForeignKey(Enrollment, on_delete=models.CASCADE, related_name='lesson_completions')
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, related_name='lesson_completions')
+    quiz_answers = models.JSONField(null=True, blank=True)
+    quiz_marks = models.PositiveIntegerField(null=True, blank=True)
+    assignment_submission = models.URLField(null=True, blank=True)
+    assignment_marks = models.PositiveIntegerField(null=True, blank=True)
     completed_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         unique_together = ('enrollment', 'lesson')
+        ordering = ['-completed_at']
         indexes = [
             models.Index(fields=['enrollment']),
             models.Index(fields=['lesson']),

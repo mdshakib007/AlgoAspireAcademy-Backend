@@ -8,5 +8,6 @@ from .lesson_completion_views import (
     LessonCompletionCreateAPIView,
     LessonCompletionDeleteAPIView,
     LessonCompletionDetailsAPIView,
-    LessonCompletionListAPIView
+    LessonCompletionListAPIView,
+    LessonCompletionUpdateAPIView,
 )

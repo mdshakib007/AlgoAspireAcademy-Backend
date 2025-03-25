@@ -7,7 +7,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework import status
 from rest_framework.response import Response
 from apps.enrollment.models import LessonCompletion, Enrollment
-from apps.enrollment.serializers import LessonCompletionSerializer
+from apps.enrollment.serializers import LessonCompletionSerializer, LessonCompletionCreateSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -98,11 +98,11 @@ class LessonCompletionDetailsAPIView(RetrieveAPIView):
 
 
 class LessonCompletionCreateAPIView(CreateAPIView):
-    serializer_class = LessonCompletionSerializer
+    serializer_class = LessonCompletionCreateSerializer
 
     @swagger_auto_schema(
         tags=['Lesson Completion'],
-        request_body= LessonCompletionSerializer,
+        request_body= LessonCompletionCreateSerializer,
         responses={
             status.HTTP_201_CREATED: openapi.Response(description='Lesson completed successfully'),
             status.HTTP_400_BAD_REQUEST: openapi.Response(description='An error occurred'),
@@ -119,6 +119,41 @@ class LessonCompletionCreateAPIView(CreateAPIView):
         if enrollment.user == request.user:
             return super().post(request, *args, **kwargs)
         return Response({'error': 'You are not authorized to create a lesson'}, status=status.HTTP_401_UNAUTHORIZED)
+
+
+class LessonCompletionUpdateAPIView(UpdateAPIView):
+    http_method_names = ['put']
+    serializer_class = LessonCompletionSerializer
+    queryset = LessonCompletion.objects.all()
+
+    def get_object(self):
+        return self.queryset.get(pk=self.kwargs.get('pk'))
+
+    @swagger_auto_schema(
+        tags=['Lesson Completion'],
+        responses={
+            status.HTTP_200_OK: openapi.Response(
+                description='Lesson completion updated successfully',
+                schema=LessonCompletionSerializer,
+            ),
+            status.HTTP_400_BAD_REQUEST: openapi.Response(description='An error occurred'),
+            status.HTTP_404_NOT_FOUND: openapi.Response(description='lesson completion not found'),
+            status.HTTP_401_UNAUTHORIZED: openapi.Response(description='You are not authorized to update')
+        }
+
+    )
+    def put(self, request, *args, **kwargs):
+        if request.user.is_instructor:
+            try:
+                instance = self.get_object()
+                serializer = self.get_serializer(instance, data=request.data, partial=True)
+                serializer.is_valid(raise_exception=True)
+                serializer.save()
+                return Response(serializer.data)
+            except LessonCompletion.DoesNotExist:
+                return Response({'error':'Lesson Completion does not exists'}, status=status.HTTP_404_NOT_FOUND)
+        else:
+            return Response({'error':'You are not authorized.'})
 
 
 class LessonCompletionDeleteAPIView(DestroyAPIView):

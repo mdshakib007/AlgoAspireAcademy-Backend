@@ -9,6 +9,7 @@ from apps.enrollment.views import (
     LessonCompletionDeleteAPIView,
     LessonCompletionDetailsAPIView,
     LessonCompletionListAPIView,
+    LessonCompletionUpdateAPIView,
 )
 
 
@@ -18,8 +19,9 @@ urlpatterns = [
     path('list/', EnrollmentListAPIView.as_view(), name='enrollment-list'),
     path('delete<int:pk>/', EnrollmentDeleteAPIView.as_view(), name='enrollment-delete'),
     
-    path('complete-lesson/create/', LessonCompletionCreateAPIView.as_view(), name='lesson-complete-create'),
-    path('complete-lesson/details/<int:pk>/', LessonCompletionDetailsAPIView.as_view(), name='lesson-complete-details'),
     path('complete-lesson/list/', LessonCompletionListAPIView.as_view(), name='lesson-complete-list'),
+    path('complete-lesson/details/<int:pk>/', LessonCompletionDetailsAPIView.as_view(), name='lesson-complete-details'),
+    path('complete-lesson/create/', LessonCompletionCreateAPIView.as_view(), name='lesson-complete-create'),
+    path('complete-lesson/update/<int:pk>/', LessonCompletionUpdateAPIView.as_view(), name='lesson-complete-update'),
     path('complete-lesson/delete/<int:pk>/', LessonCompletionDeleteAPIView.as_view(), name='lesson-complete-delete'),
 ]
