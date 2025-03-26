@@ -45,3 +45,36 @@ class UserLoginSerializer(serializers.Serializer):
         attrs["user"] = authenticated_user
         return attrs
     
+
+class ChangePasswordSerializer(serializers.Serializer):
+    old_password = serializers.CharField(required=True, write_only=True)
+    new_password = serializers.CharField(required=True, write_only=True)
+    new_password_confirm = serializers.CharField(required=True, write_only=True)
+
+    def validate_old_password(self, value):
+        user = self.context['request'].user
+        if not user.check_password(value):
+            raise serializers.ValidationError("Old password is incorrect.")
+        return value
+
+    def validate(self, attrs):
+        if attrs['new_password'] != attrs['new_password_confirm']:
+            raise serializers.ValidationError("New password and confirm password do not match.")
+        if len(attrs['new_password']) < 8:
+            raise serializers.ValidationError("New password must be at least 8 characters long.")
+        return attrs
+
+    def save(self, **kwargs):
+        user = self.context['request'].user
+        user.set_password(self.validated_data['new_password'])
+        user.save()
+        return user
+
+
+class UserProfileUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = [
+            'full_name', 'profile_picture', 'date_of_birth', 
+            'phone_number', 't_shirt_size', 'country', 'city', 'organization'
+        ]

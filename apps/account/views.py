@@ -19,7 +19,12 @@ from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 
 from apps.account.models import User
-from apps.account.serializers import UserLoginSerializer, UserRegistrationSerializer
+from apps.account.serializers import (
+    UserLoginSerializer, 
+    UserRegistrationSerializer, 
+    ChangePasswordSerializer, 
+    UserProfileUpdateSerializer
+) 
 
 logger = logging.getLogger(__name__)
 
@@ -159,3 +164,55 @@ class LogoutView(APIView):
         response = Response({"success": "Logged out successfully"}, status=status.HTTP_200_OK)
         response.delete_cookie("refresh_token")  # clear the refresh token cookie
         return response
+
+
+class AccountDeleteView(APIView):
+    @swagger_auto_schema(
+        tags=['Account'],
+        responses={
+            status.HTTP_200_OK: "Account deleted successfully",
+            status.HTTP_400_BAD_REQUEST: "An error occurred"
+        }
+    )
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        user.is_active = False
+        user.is_deleted = True
+        user.save(update_fields=["is_active", "is_deleted"])
+        return Response({"detail": "Account deleted successfully."}, status=status.HTTP_200_OK)
+
+
+class ChangePasswordView(APIView):
+    @swagger_auto_schema(
+        request_body=ChangePasswordSerializer,
+        responses={
+            status.HTTP_200_OK: "Password changed successfully",
+            status.HTTP_400_BAD_REQUEST: "Validation errors"
+        },
+        tags=['Account']
+    )
+    def post(self, request, *args, **kwargs):
+        serializer = ChangePasswordSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"detail": "Password changed successfully"}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class EditProfileView(APIView):
+    http_method_names = ['put']
+    @swagger_auto_schema(
+        tags=['Account'],
+        request_body=UserProfileUpdateSerializer,
+        responses={
+            status.HTTP_200_OK: "Profile updated successfully",
+            status.HTTP_400_BAD_REQUEST: "Validation errors"
+        },
+    )
+    def put(self, request, *args, **kwargs):
+        user = request.user
+        serializer = UserProfileUpdateSerializer(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"detail": "Profile updated successfully", "user": serializer.data}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
