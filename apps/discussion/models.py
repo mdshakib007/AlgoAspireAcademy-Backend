@@ -3,12 +3,13 @@ from django.template.defaultfilters import slugify
 
 from apps.account.models import User
 from apps.course.models import Lesson
-from apps.discussion.constants import DiscussionTypes, AccessTypes
+from apps.discussion.constants import PostTypes, AccessTypes
 
 
 class Tag(models.Model):
     name = models.CharField(max_length=50)
     slug = models.SlugField(max_length=60, null=True, blank=True)
+    is_active = models.BooleanField(default=True)
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -24,12 +25,13 @@ class Post(models.Model):
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, related_name='posts', null=True, blank=True)
     title = models.CharField(max_length=250)
     body = models.TextField()
-    post_type = models.CharField(max_length=20, choices=DiscussionTypes.choices)
+    post_type = models.CharField(max_length=20, choices=PostTypes.choices)
     access = models.CharField(max_length=10, choices=AccessTypes.choices, default=AccessTypes.PUBLIC)
     views = models.PositiveIntegerField(default=0)
     tags = models.ManyToManyField(Tag, related_name="posts", blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    is_deleted = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'Posts'
@@ -37,6 +39,7 @@ class Post(models.Model):
             models.Index(fields=['user']),
             models.Index(fields=['lesson']),
             models.Index(fields=['post_type']),
+            models.Index(fields=['is_deleted']),
             models.Index(fields=['user', 'lesson']),
             models.Index(fields=['user', 'lesson', 'post_type'])
         ]
@@ -73,6 +76,8 @@ class Comment(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="comments")
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_deleted = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'Comments'
@@ -80,6 +85,7 @@ class Comment(models.Model):
         indexes = [
             models.Index(fields=['user']),
             models.Index(fields=['post']),
+            models.Index(fields=['is_deleted']),
             models.Index(fields=['user', 'post']),
         ]
 

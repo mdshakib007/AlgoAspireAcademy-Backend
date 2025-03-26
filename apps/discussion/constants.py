@@ -1,14 +1,14 @@
 from django.db import models
 
-class DiscussionTypes(models.TextChoices):
-    NOTE = 'Note', 'Note'
-    QUESTION = 'Question', 'Question'
-    FEEDBACK = 'Feedback', 'Feedback'
-    EDITORIAL = 'Editorial', 'Editorial'
-    ANNOUNCEMENT = 'Announcement', 'Announcement'
-    TUTORIAL = 'Tutorial', 'Tutorial'
+class PostTypes(models.TextChoices):
+    NOTE = 'note', 'Note'
+    QUESTION = 'question', 'Question'
+    FEEDBACK = 'feedback', 'Feedback'
+    EDITORIAL = 'editorial', 'Editorial'
+    ANNOUNCEMENT = 'announcement', 'Announcement'
+    TUTORIAL = 'tutorial', 'Tutorial'
 
 
 class AccessTypes(models.TextChoices):
-    PUBLIC = 'Public', 'Public'
-    PRIVATE = 'Private', 'Private'
+    PUBLIC = 'public', 'Public'
+    PRIVATE = 'private', 'Private'
