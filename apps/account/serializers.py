@@ -76,5 +76,19 @@ class UserProfileUpdateSerializer(serializers.ModelSerializer):
         model = User
         fields = [
             'full_name', 'profile_picture', 'date_of_birth', 
-            'phone_number', 't_shirt_size', 'country', 'city', 'organization'
+            'phone_number', 't_shirt_size', 'country', 'city', 'organization',
+            'is_private', 'bio', 'portfolio', 'github', 'instagram',
+            'linkedin', 'codeforces', 'job_experiences', 'skills',
+        ]
+
+class UserDetailsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = [
+            'username', 'email', 'full_name', 'profile_picture',
+            'date_of_birth', 'phone_number', 't_shirt_size', 
+            'country', 'city', 'organization', 'is_admin',
+            'is_instructor', 'is_verified', 'is_private', 'bio', 
+            'portfolio', 'github', 'instagram', 'linkedin', 
+            'codeforces', 'job_experiences', 'skills',
         ]

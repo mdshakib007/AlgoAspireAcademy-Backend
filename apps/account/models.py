@@ -34,11 +34,21 @@ class User(AbstractBaseUser, PermissionsMixin):
     city = models.CharField(max_length=50, null=True, blank=True)
     organization = models.CharField(max_length=100, null=True, blank=True) # School, College, University or Company
 
+    bio = models.CharField(max_length=250, null=True, blank=True)
+    portfolio = models.URLField(max_length=100, null=True, blank=True)
+    github = models.URLField(max_length=100, null=True, blank=True)
+    instagram = models.URLField(max_length=100, null=True, blank=True)
+    linkedin = models.URLField(max_length=100, null=True, blank=True)
+    codeforces = models.URLField(max_length=100, null=True, blank=True)
+    job_experiences = models.JSONField(null=True, blank=True)
+    skills = models.JSONField(null=True, blank=True)
+
     is_admin = models.BooleanField(default=False)
     is_instructor = models.BooleanField(default=False)
     is_verified = models.BooleanField(default=False)
     is_deleted = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)
+    is_private = models.BooleanField(default=False)
 
     objects = CustomUserManager()
 

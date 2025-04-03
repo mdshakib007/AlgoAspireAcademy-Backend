@@ -3,6 +3,7 @@ import logging
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.views import APIView
+from rest_framework.generics import RetrieveAPIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -10,10 +11,9 @@ from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.views import TokenRefreshView
 
 from django.conf import settings
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
@@ -23,12 +23,12 @@ from apps.account.serializers import (
     UserLoginSerializer, 
     UserRegistrationSerializer, 
     ChangePasswordSerializer, 
-    UserProfileUpdateSerializer
+    UserProfileUpdateSerializer,
+    UserDetailsSerializer
 ) 
 
 logger = logging.getLogger(__name__)
 
-User = get_user_model()
 
 
 class UserRegistrationView(APIView):
@@ -102,6 +102,7 @@ class UserLoginView(APIView):
                 "user": {
                     "username": user.username,
                     "email": user.email,
+                    "profile_picture": user.profile_picture
                 }
             }, status=status.HTTP_200_OK)
 
@@ -116,7 +117,7 @@ class UserLoginView(APIView):
 
             return response
         
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_404_NOT_FOUND)
 
 
 class CookieTokenRefreshView(TokenRefreshView):
@@ -216,3 +217,42 @@ class EditProfileView(APIView):
             serializer.save()
             return Response({"detail": "Profile updated successfully", "user": serializer.data}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class MyDetailsAPIView(APIView):
+    serializer_class = UserDetailsSerializer
+
+    @swagger_auto_schema(
+        tags=['Account'],
+        responses={
+            status.HTTP_200_OK: UserDetailsSerializer,
+            status.HTTP_401_UNAUTHORIZED: "Authentication credentials were not provided."
+        }
+    )
+    def get(self, request):
+        user = User.objects.get(pk=request.user.id)
+        serializer = self.serializer_class(user)
+        return Response(serializer.data)
+
+
+class UserDetailsAPIView(APIView):
+    serializer_class = UserDetailsSerializer
+    permission_classes = [AllowAny]
+
+    @swagger_auto_schema(
+        tags=['Account'],
+        responses={
+            status.HTTP_200_OK: UserDetailsSerializer(),
+            status.HTTP_404_NOT_FOUND: "User not found.",
+            status.HTTP_400_BAD_REQUEST: "This profile is private."
+        }
+    )
+    def get(self, request, username, *args, **kwargs):
+        """
+        Get user details by username.
+        """
+        user = get_object_or_404(User, username=username, is_active=True, is_deleted=False)
+        if user.is_private:
+            return Response({'details': 'This profile is private'}, status=status.HTTP_400_BAD_REQUEST)
+        serializer = self.serializer_class(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)

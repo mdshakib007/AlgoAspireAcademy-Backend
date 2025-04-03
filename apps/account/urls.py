@@ -7,6 +7,8 @@ from apps.account.views import (
     EditProfileView,
     ChangePasswordView,
     AccountDeleteView,
+    MyDetailsAPIView,
+    UserDetailsAPIView,
 )
 
 urlpatterns = [
@@ -17,4 +19,6 @@ urlpatterns = [
     path('change-password/', ChangePasswordView.as_view(), name='change-password'),
     path('edit-profile/', EditProfileView.as_view(), name='edit-profile'),
     path('delete/', AccountDeleteView.as_view(), name='delete'),
+    path('me/', MyDetailsAPIView.as_view(), name='details'),
+    path('user/<str:username>/', UserDetailsAPIView.as_view(), name='user-details'),
 ]

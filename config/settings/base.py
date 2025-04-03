@@ -28,6 +28,7 @@ THIRD_PARTY_APPS = [
     'corsheaders',
     'rest_framework',
     'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
     'drf_yasg',
 ]
 
@@ -152,7 +153,7 @@ LOGGING = {
 
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(hours=1),
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=30),
     "ROTATE_REFRESH_TOKENS": True,
     "BLACKLIST_AFTER_ROTATION": True,
@@ -197,6 +198,7 @@ CORS_ALLOWED_ORIGINS = [
     "https://example.com",
     "http://localhost:3000",  # If frontend is running on localhost
     "http://127.0.0.1:8000",  # Django dev server
+    "http://localhost:5173",
 ]
 
 
@@ -216,3 +218,4 @@ CORS_ALLOW_HEADERS = [
 ]
 
 CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_ALL_ORIGINS = True
