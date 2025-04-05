@@ -26,5 +26,5 @@ urlpatterns = [
     # profile summary
     path('me/', MyDetailsAPIView.as_view(), name='details'),
     path('<str:username>/', UserDetailsAPIView.as_view(), name='user-details'),
-    path('<str:username>/summary', UserSummaryAPIView.as_view(), name='user-summary'),
+    path('<str:username>/summary/', UserSummaryAPIView.as_view(), name='user-summary'),
 ]

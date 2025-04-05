@@ -116,9 +116,9 @@ class UserSummarySerializer(serializers.Serializer):
         course = enrollment.course
         return {
             "id": course.id,
-            "title": course.title,
+            "name": course.name,
             "slug": course.slug,
-            "image": course.image.url if course.image else None,
+            "image": course.image if course.image else None,
             "progress": float(enrollment.completed_percentage or 0.0),
             "estimate_completion_date": enrollment.estimate_completion_date,
         }
@@ -131,9 +131,10 @@ class UserSummarySerializer(serializers.Serializer):
         return [
             {
                 "id": e.course.id,
-                "title": e.course.title,
+                "name": e.course.name,
                 "slug": e.course.slug,
-                "image": e.course.image.url if e.course.image else None,
+                "image": e.course.image if e.course.image else None,
+                "progress": float(e.completed_percentage or 0.0),
                 "completed_at": e.completed_at,
             }
             for e in enrollments if e.course
