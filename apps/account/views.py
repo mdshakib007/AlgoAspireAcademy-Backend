@@ -24,7 +24,8 @@ from apps.account.serializers import (
     UserRegistrationSerializer, 
     ChangePasswordSerializer, 
     UserProfileUpdateSerializer,
-    UserDetailsSerializer
+    UserDetailsSerializer,
+    UserSummarySerializer,
 ) 
 
 logger = logging.getLogger(__name__)
@@ -223,7 +224,7 @@ class MyDetailsAPIView(APIView):
     serializer_class = UserDetailsSerializer
 
     @swagger_auto_schema(
-        tags=['Account'],
+        tags=['Profile'],
         responses={
             status.HTTP_200_OK: UserDetailsSerializer,
             status.HTTP_401_UNAUTHORIZED: "Authentication credentials were not provided."
@@ -240,7 +241,7 @@ class UserDetailsAPIView(APIView):
     permission_classes = [AllowAny]
 
     @swagger_auto_schema(
-        tags=['Account'],
+        tags=['Profile'],
         responses={
             status.HTTP_200_OK: UserDetailsSerializer(),
             status.HTTP_404_NOT_FOUND: "User not found.",
@@ -250,6 +251,29 @@ class UserDetailsAPIView(APIView):
     def get(self, request, username, *args, **kwargs):
         """
         Get user details by username.
+        """
+        user = get_object_or_404(User, username=username, is_active=True, is_deleted=False)
+        if user.is_private:
+            return Response({'details': 'This profile is private'}, status=status.HTTP_400_BAD_REQUEST)
+        serializer = self.serializer_class(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class UserSummaryAPIView(APIView):
+    serializer_class = UserSummarySerializer
+    permission_classes = [AllowAny]
+
+    @swagger_auto_schema(
+        tags=['Profile'],
+        responses={
+            status.HTTP_200_OK: UserSummarySerializer(),
+            status.HTTP_404_NOT_FOUND: "User not found.",
+            status.HTTP_400_BAD_REQUEST: "This profile is private."
+        }
+    )
+    def get(self, request, username, *args, **kwargs):
+        """
+        Get user summary by username.
         """
         user = get_object_or_404(User, username=username, is_active=True, is_deleted=False)
         if user.is_private:

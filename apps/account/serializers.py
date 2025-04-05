@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from rest_framework.authentication import authenticate
 from apps.account.models import User
+from apps.course.models import Course, Module, Lesson, Quiz, Assignment
+from apps.enrollment.models import LessonCompletion, Enrollment
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
@@ -92,3 +94,71 @@ class UserDetailsSerializer(serializers.ModelSerializer):
             'portfolio', 'github', 'instagram', 'linkedin', 
             'codeforces', 'job_experiences', 'skills',
         ]
+
+
+class UserSummarySerializer(serializers.Serializer):
+    running_course = serializers.SerializerMethodField()
+    completed_courses = serializers.SerializerMethodField()
+    completed_course_count = serializers.SerializerMethodField()
+    completed_lesson_count = serializers.SerializerMethodField()
+    completed_quiz_count = serializers.SerializerMethodField()
+    completed_assignment_count = serializers.SerializerMethodField()
+    total_course_count = serializers.SerializerMethodField()
+    total_lesson_count = serializers.SerializerMethodField()
+    total_quiz_count = serializers.SerializerMethodField()
+    total_assignment_count = serializers.SerializerMethodField()
+
+    def get_running_course(self, user):
+        enrollment = user.enrollments.filter(is_completed=False).select_related('course').first()
+        if not enrollment or not enrollment.course:
+            return None
+
+        course = enrollment.course
+        return {
+            "id": course.id,
+            "title": course.title,
+            "slug": course.slug,
+            "image": course.image.url if course.image else None,
+            "progress": float(enrollment.completed_percentage or 0.0),
+            "estimate_completion_date": enrollment.estimate_completion_date,
+        }
+
+    def get_completed_courses(self, user):
+        enrollments = user.enrollments.filter(is_completed=True).select_related('course')
+        if not enrollments.exists():
+            return []
+
+        return [
+            {
+                "id": e.course.id,
+                "title": e.course.title,
+                "slug": e.course.slug,
+                "image": e.course.image.url if e.course.image else None,
+                "completed_at": e.completed_at,
+            }
+            for e in enrollments if e.course
+        ]
+
+    def get_completed_course_count(self, user):
+        return user.enrollments.filter(is_completed=True).count()
+
+    def get_completed_lesson_count(self, user):
+        return LessonCompletion.objects.filter(enrollment__user=user).count()
+
+    def get_completed_quiz_count(self, user):
+        return LessonCompletion.objects.filter(enrollment__user=user, quiz_marks__isnull=False).count()
+
+    def get_completed_assignment_count(self, user):
+        return LessonCompletion.objects.filter(enrollment__user=user, assignment_marks__isnull=False).count()
+
+    def get_total_course_count(self, user):
+        return Course.objects.count()
+
+    def get_total_lesson_count(self, user):
+        return Lesson.objects.count()
+
+    def get_total_quiz_count(self, user):
+        return Quiz.objects.count()
+
+    def get_total_assignment_count(self, user):
+        return Assignment.objects.count()
