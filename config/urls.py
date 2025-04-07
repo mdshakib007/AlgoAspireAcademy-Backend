@@ -41,6 +41,7 @@ urlpatterns = [
     path('api/token/refresh/', CookieTokenRefreshView.as_view(), name='refresh-token'),
 
     path('api/account/', include('apps.account.urls')),
+    path('api/core/', include('apps.core.urls')),
     path('api/course/', include('apps.course.urls')),
     path('api/discussion/', include('apps.discussion.urls')),
     path('api/gamification/', include('apps.gamification.urls')),

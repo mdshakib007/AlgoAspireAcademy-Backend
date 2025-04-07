@@ -38,6 +38,7 @@ PROJECT_APPS = [
     'apps.discussion.apps.DiscussionConfig',
     'apps.enrollment.apps.EnrollmentConfig',
     'apps.gamification.apps.GamificationConfig',
+    'apps.core.apps.CoreConfig',
 ]
 
 INSTALLED_APPS = DJANGO_DEFAULT_APPS + THIRD_PARTY_APPS + PROJECT_APPS

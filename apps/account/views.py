@@ -253,7 +253,7 @@ class UserDetailsAPIView(APIView):
         Get user details by username.
         """
         user = get_object_or_404(User, username=username, is_active=True, is_deleted=False)
-        if user.is_private:
+        if user.is_private and request.user != user:
             return Response({'details': 'This profile is private'}, status=status.HTTP_400_BAD_REQUEST)
         serializer = self.serializer_class(user)
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -276,7 +276,7 @@ class UserSummaryAPIView(APIView):
         Get user summary by username.
         """
         user = get_object_or_404(User, username=username, is_active=True, is_deleted=False)
-        if user.is_private:
+        if user.is_private and request.user != user:
             return Response({'details': 'This profile is private'}, status=status.HTTP_400_BAD_REQUEST)
         serializer = self.serializer_class(user)
         return Response(serializer.data, status=status.HTTP_200_OK)
