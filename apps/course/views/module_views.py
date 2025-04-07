@@ -9,6 +9,7 @@ from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema 
 from rest_framework import status 
 from rest_framework.views import APIView, Response
+from rest_framework.permissions import AllowAny
 from rest_framework.exceptions import NotFound 
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView, DestroyAPIView, UpdateAPIView
@@ -32,9 +33,10 @@ class CustomPagination(PageNumberPagination):
 class ModuleListAPIView(ListAPIView):
     serializer_class = ModuleListSerializer
     pagination_class = CustomPagination
+    permission_classes = [AllowAny]
 
     def get_queryset(self):
-        queryset = Module.objects.all()
+        queryset = Module.objects.prefetch_related('lessons').all()
 
         course_id = self.request.query_params.get('course_id')
         is_published = self.request.query_params.get('is_published')
@@ -89,6 +91,7 @@ class ModuleListAPIView(ListAPIView):
 class ModuleDetailsAPIView(RetrieveAPIView):
     queryset = Module.objects.all()
     serializer_class = ModuleDetailSerializer
+    permission_classes = [AllowAny]
 
     @swagger_auto_schema(
         tags=['Module'],

@@ -8,6 +8,7 @@ import logging
 from drf_yasg import openapi 
 from drf_yasg.utils import swagger_auto_schema 
 from rest_framework import status 
+from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView, Response
 from rest_framework.exceptions import NotFound 
 from rest_framework.pagination import PageNumberPagination
@@ -32,6 +33,7 @@ class CustomPagination(PageNumberPagination):
 class LessonListAPIView(ListAPIView):
     serializer_class = LessonListSerializer
     pagination_class = CustomPagination
+    permission_classes = [AllowAny]
 
     def get_queryset(self):
         queryset = Lesson.objects.all()
@@ -94,6 +96,7 @@ class LessonListAPIView(ListAPIView):
 class LessonDetailsAPIView(RetrieveAPIView):
     queryset = Lesson.objects.all()
     serializer_class = LessonDetailsSerializer
+    permission_classes = [AllowAny]
 
     @swagger_auto_schema(
         tags=['Lesson'],
