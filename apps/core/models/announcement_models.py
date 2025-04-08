@@ -8,5 +8,14 @@ class Announcement(models.Model):
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        db_table = 'Announcements'
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['is_active', 'created_at']),
+        ]
+        verbose_name = 'Announcement'
+        verbose_name_plural = 'Announcements'
+
     def __str__(self):
         return self.title

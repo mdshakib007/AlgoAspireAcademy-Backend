@@ -115,12 +115,16 @@ class EnrollmentCreateAPIView(CreateAPIView):
         responses={
             status.HTTP_201_CREATED: openapi.Response(description='Enrollment created successfully'),
             status.HTTP_400_BAD_REQUEST: openapi.Response(description='An error occurred'),
-            status.HTTP_401_UNAUTHORIZED: openapi.Response(description='You are not authorized to create enrollment')
+            status.HTTP_401_UNAUTHORIZED: openapi.Response(description='You are not authorized to create enrollment'),
+            status.HTTP_406_NOT_ACCEPTABLE: openapi.Response(description='Please Complete Running Course First')
         }
     )
     def post(self, request, *args, **kwargs):
         user = request.user
         course_id = request.data.get('course')
+
+        if Enrollment.objects.filter(user=user, is_completed=False).exists():
+            return Response({"error" : "Please Complete Running Course First"}, status=status.HTTP_406_NOT_ACCEPTABLE)
 
         if not course_id:
             return Response({"error": "Course ID is required"}, status=status.HTTP_400_BAD_REQUEST)

@@ -1,1 +1,1 @@
-from .announcement_serializers import AnnouncementSerializer
+from .announcement_serializers import AnnouncementSerializer, AnnouncementListSerializer

@@ -1,1 +1,1 @@
-from .announcement_views import LatestAnnouncementAPIView
+from .announcement_views import LatestAnnouncementAPIView, RecentAnnouncementsAPIView, AnnouncementDetailAPIView
