@@ -21,7 +21,7 @@ class PostListSerializer(serializers.ModelSerializer):
 
     def get_user_image(self, obj):
         if obj.user and obj.user.profile_picture:
-            return obj.user.profile_picture.url
+            return obj.user.profile_picture
         return None
 
 
@@ -43,7 +43,7 @@ class PostDetailsSerializer(serializers.ModelSerializer):
 
     def get_user_image(self, obj):
         if obj.user and obj.user.profile_picture:
-            return obj.user.profile_picture.url
+            return obj.user.profile_picture
         return None
 
 

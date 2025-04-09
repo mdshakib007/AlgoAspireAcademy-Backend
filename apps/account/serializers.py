@@ -119,6 +119,11 @@ class UserSummarySerializer(serializers.Serializer):
             "name": course.name,
             "slug": course.slug,
             "image": course.image if course.image else None,
+            "instructor": course.instructor.username,
+            "module_count": course.module_count,
+            "lesson_count": course.lesson_count,
+            "assignment_count": course.assignment_count,
+            "quiz_count": course.quiz_count,
             "progress": float(enrollment.completed_percentage or 0.0),
             "estimate_completion_date": enrollment.estimate_completion_date,
         }
@@ -134,6 +139,11 @@ class UserSummarySerializer(serializers.Serializer):
                 "name": e.course.name,
                 "slug": e.course.slug,
                 "image": e.course.image if e.course.image else None,
+                "instructor": e.course.instructor.username,
+                "module_count": e.course.module_count,
+                "lesson_count": e.course.lesson_count,
+                "assignment_count": e.course.assignment_count,
+                "quiz_count": e.course.quiz_count,
                 "progress": float(e.completed_percentage or 0.0),
                 "completed_at": e.completed_at,
             }

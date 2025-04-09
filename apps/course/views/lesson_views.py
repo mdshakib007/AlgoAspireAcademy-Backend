@@ -94,7 +94,7 @@ class LessonListAPIView(ListAPIView):
 
 
 class LessonDetailsAPIView(RetrieveAPIView):
-    queryset = Lesson.objects.all()
+    queryset = Lesson.objects.select_related('quiz', 'assignment').prefetch_related('quiz__questions').all()
     serializer_class = LessonDetailsSerializer
     permission_classes = [AllowAny]
 

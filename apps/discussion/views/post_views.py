@@ -6,6 +6,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.exceptions import NotFound
+from rest_framework.permissions import AllowAny
 
 from apps.discussion.serializers import PostCreateSerializer, PostDetailsSerializer, PostListSerializer
 from apps.discussion.models import Post
@@ -20,6 +21,7 @@ class CustomPagination(PageNumberPagination):
 class PostListAPIView(ListAPIView):
     serializer_class = PostListSerializer
     pagination_class = CustomPagination
+    permission_classes = [AllowAny]
 
     def get_queryset(self):
         queryset = Post.objects.filter(is_deleted=False)
@@ -95,6 +97,7 @@ class PostListAPIView(ListAPIView):
 class PostDetailsAPIView(RetrieveAPIView):
     queryset = Post.objects.filter(is_deleted=False)
     serializer_class = PostDetailsSerializer
+    permission_classes = [AllowAny]
 
     def get_object(self):
         post_id = self.kwargs.get('pk')
