@@ -1,1 +1,2 @@
 from .announcement_views import LatestAnnouncementAPIView, RecentAnnouncementsAPIView, AnnouncementDetailAPIView
+from .report_views import ReportCreateAPIView, ReportListAPIView

@@ -102,7 +102,7 @@ class CommentCreateAPIView(CreateAPIView):
                 post=_post,
                 content=content
             )
-            serializer = self.serializer_class(new_comment)
+            serializer = CommentListSerializer(instance=new_comment)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
         
@@ -133,7 +133,8 @@ class CommentUpdateAPIView(UpdateAPIView):
             serializer = self.get_serializer(instance, data=request.data, partial=True)
             serializer.is_valid(raise_exception=True)
             serializer.save()
-            return Response(serializer.data)
+            output_serializer = CommentListSerializer(instance=instance)
+            return Response(output_serializer.data)
         except Comment.DoesNotExist:
             return Response({'error': 'Comment not found'}, status=status.HTTP_404_NOT_FOUND)
 

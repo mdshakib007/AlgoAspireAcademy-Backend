@@ -1,1 +1,2 @@
 from .announcement_serializers import AnnouncementSerializer, AnnouncementListSerializer
+from .report_serializers import ReportCreateSerializer, ReportListSerializer
