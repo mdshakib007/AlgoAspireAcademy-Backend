@@ -19,9 +19,9 @@ if settings.DEBUG:
         openapi.Info(
             title="AlgoAspire API",
             default_version='v1',
-            description="This is the api documentation of AlgoAspire-Web",
-            terms_of_service="https://www.algoaspire.com/terms/",
-            contact=openapi.Contact(email="contact@algoaspire.com"),
+            description="This is the api documentation of AlgoAspire-Academy",
+            terms_of_service="https://algoaspire-academy.vercel.app/terms",
+            contact=openapi.Contact(email="algoaspire.academy@gmail.com"),
             license=openapi.License(name="MIT License"),
         ),
         public=True,

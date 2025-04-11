@@ -1,3 +1,4 @@
+from django.db.models import F
 import logging 
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
@@ -130,11 +131,15 @@ class PostDetailsAPIView(RetrieveAPIView):
     def get(self, request, *args, **kwargs):
         try:
             post = self.get_object()
+            Post.objects.filter(pk=post.pk).update(views=F('views') + 1)
+            post.refresh_from_db(fields=['views'])
+
             serializer = self.get_serializer(post)
             return Response(serializer.data)
+
         except Post.DoesNotExist:
-            return Response({'error':'Post not found'}, status=status.HTTP_404_NOT_FOUND)
-    
+            return Response({'error': 'Post not found'}, status=status.HTTP_404_NOT_FOUND)
+
 
 class PostCreateAPIView(CreateAPIView):
     serializer_class = PostCreateSerializer

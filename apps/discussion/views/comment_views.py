@@ -6,6 +6,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.exceptions import NotFound
+from rest_framework.permissions import AllowAny
 
 from apps.discussion.serializers import CommentCreateSerializer, CommentListSerializer
 from apps.discussion.models import Comment, Post
@@ -20,7 +21,8 @@ class CustomPagination(PageNumberPagination):
 class CommentListAPIView(ListAPIView):
     serializer_class = CommentListSerializer
     pagination_class = CustomPagination
-
+    permission_classes = [AllowAny]
+    
     def get_queryset(self):
         queryset = Comment.objects.filter(is_deleted=False)
         user_id = self.request.query_params.get('user_id')

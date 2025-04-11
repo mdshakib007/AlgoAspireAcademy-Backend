@@ -19,7 +19,8 @@ class VotePostView(CreateAPIView):
         tags=['Vote'],
         request_body=VoteSerializer,
         responses={
-            status.HTTP_200_OK: openapi.Response('Successfully Toggled Vote'),
+            status.HTTP_201_CREATED: openapi.Response('Successfully Vote added'),
+            status.HTTP_204_NO_CONTENT: openapi.Response('Successfully Vote removed'),
             status.HTTP_404_NOT_FOUND: openapi.Response('Post not found'),
             status.HTTP_400_BAD_REQUEST: openapi.Response('An error occurred'),
         }
