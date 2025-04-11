@@ -29,6 +29,7 @@ class PostListAPIView(ListAPIView):
         lesson_id = self.request.query_params.get('lesson_id')
         post_type = self.request.query_params.get('post_type')
         access_type = self.request.query_params.get('access')
+        title_query = self.request.query_params.get('title')
 
         if user_id:
             queryset = queryset.filter(user=user_id)
@@ -38,6 +39,8 @@ class PostListAPIView(ListAPIView):
             queryset = queryset.filter(post_type=post_type.lower())
         if access_type:
             queryset = queryset.filter(access=access_type.lower())
+        if title_query:
+            queryset = queryset.filter(title__icontains=title_query)
 
         return queryset
     
@@ -69,6 +72,13 @@ class PostListAPIView(ListAPIView):
                 'access_type',
                 openapi.IN_QUERY,
                 description="Filter by access type(Public, Private)",
+                type=openapi.TYPE_STRING,
+                required=False
+            ),
+            openapi.Parameter(
+                'title',
+                openapi.IN_QUERY,
+                description="Search posts by title (partial match)",
                 type=openapi.TYPE_STRING,
                 required=False
             ),
