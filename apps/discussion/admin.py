@@ -17,7 +17,7 @@ class CommentInline(admin.TabularInline):
 
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
-    list_display = ('title', 'user', 'post_type', 'access', 'views', 'created_at')
+    list_display = ('title', 'user', 'post_type', 'access', 'views', 'is_deleted', 'created_at')
     list_filter = ('post_type', 'access', 'created_at')
     search_fields = ('title', 'body', 'user__username')
     inlines = [VoteInline, CommentInline]
@@ -30,5 +30,5 @@ class VoteAdmin(admin.ModelAdmin):
 
 @admin.register(Comment)
 class CommentAdmin(admin.ModelAdmin):
-    list_display = ('user', 'post', 'created_at')
+    list_display = ('user', 'post', 'is_deleted', 'created_at')
     search_fields = ('user__username', 'post__title', 'content')

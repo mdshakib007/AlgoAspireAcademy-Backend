@@ -29,7 +29,7 @@ class PostListAPIView(ListAPIView):
         user_id = self.request.query_params.get('user_id')
         lesson_id = self.request.query_params.get('lesson_id')
         post_type = self.request.query_params.get('post_type')
-        access_type = self.request.query_params.get('access')
+        access_type = self.request.query_params.get('access_type')
         title_query = self.request.query_params.get('title')
 
         if user_id:

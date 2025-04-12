@@ -28,7 +28,8 @@ class Post(models.Model):
     post_type = models.CharField(max_length=20, choices=PostTypes.choices)
     access = models.CharField(max_length=10, choices=AccessTypes.choices, default=AccessTypes.PUBLIC)
     views = models.PositiveIntegerField(default=0)
-    tags = models.ManyToManyField(Tag, related_name="posts", blank=True)
+    # tags = models.ManyToManyField(Tag, related_name="posts", blank=True)
+    tags = models.JSONField(default=list, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     is_deleted = models.BooleanField(default=False)
@@ -49,7 +50,7 @@ class Post(models.Model):
         return self.votes.count()
     
     def comment_count(self):
-        return self.comments.count()
+        return self.comments.filter(is_deleted=False).count()
 
     def __str__(self):
         return f"{self.title}"
