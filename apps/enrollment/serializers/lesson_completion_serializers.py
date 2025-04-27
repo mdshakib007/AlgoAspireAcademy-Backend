@@ -26,5 +26,5 @@ class LessonCompletionCreateSerializer(serializers.ModelSerializer):
         model = LessonCompletion
         fields = [
             'enrollment', 'lesson', 'quiz_answers',
-            'assignment_submission', 
+            'quiz_marks', 'assignment_submission', 
         ]
