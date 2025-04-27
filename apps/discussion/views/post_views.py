@@ -36,12 +36,15 @@ class PostListAPIView(ListAPIView):
             queryset = queryset.filter(user=user_id)
         if lesson_id:
             queryset = queryset.filter(lesson=lesson_id)
-        if post_type:
-            queryset = queryset.filter(post_type=post_type.lower())
         if access_type:
             queryset = queryset.filter(access=access_type.lower())
         if title_query:
             queryset = queryset.filter(title__icontains=title_query)
+        
+        if post_type:
+            queryset = queryset.filter(post_type=post_type.lower())
+        else:
+            queryset = queryset.exclude(post_type='note')
 
         return queryset
     

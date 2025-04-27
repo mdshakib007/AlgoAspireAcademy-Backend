@@ -1,2 +1,2 @@
 from .lesson_completion_serializers import LessonCompletionSerializer, LessonCompletionCreateSerializer
-from .enrollment_serializers import EnrollmentSerializer
+from .enrollment_serializers import EnrollmentSerializer,EnrollmentDetailsSerializer

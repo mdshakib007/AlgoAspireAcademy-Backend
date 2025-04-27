@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.shortcuts import get_object_or_404
 import logging
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
@@ -8,7 +9,7 @@ from rest_framework import status
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 from apps.enrollment.models import Enrollment
-from apps.enrollment.serializers import EnrollmentSerializer
+from apps.enrollment.serializers import EnrollmentSerializer, EnrollmentDetailsSerializer
 from apps.course.models import Course
 
 logger = logging.getLogger(__name__)
@@ -69,24 +70,32 @@ class EnrollmentListAPIView(ListAPIView):
 
 
 class EnrollmentDetailsAPIView(RetrieveAPIView):
-    queryset = Enrollment.objects.all()
-    serializer_class = EnrollmentSerializer
+    queryset = Enrollment.objects.prefetch_related('lesson_completions').all()
+    serializer_class = EnrollmentDetailsSerializer
 
     @swagger_auto_schema(
         tags=['Enrollment'],
+        manual_parameters=[
+            openapi.Parameter(
+                'user_id',
+                openapi.IN_QUERY,
+                description="User ID of the enrollment",
+                type=openapi.TYPE_INTEGER,
+                required=False,
+            ),
+            openapi.Parameter(
+                'course_id',
+                openapi.IN_QUERY,
+                description="Course ID of the enrollment",
+                type=openapi.TYPE_INTEGER,
+                required=False,
+            ),
+        ],
         responses={
-            status.HTTP_200_OK: openapi.Response(
-                description='enrollment details'
-            ),
-            status.HTTP_401_UNAUTHORIZED: openapi.Response(
-                description='You are not authorized to view'
-            ),
-            status.HTTP_404_NOT_FOUND: openapi.Response(
-                description='Not found'
-            ),
-            status.HTTP_400_BAD_REQUEST: openapi.Response(
-                description='An error occurred'
-            )
+            status.HTTP_200_OK: openapi.Response(description='Enrollment details'),
+            status.HTTP_401_UNAUTHORIZED: openapi.Response(description='Unauthorized'),
+            status.HTTP_404_NOT_FOUND: openapi.Response(description='Not found'),
+            status.HTTP_400_BAD_REQUEST: openapi.Response(description='An error occurred'),
         }
     )
     def get(self, request, *args, **kwargs):
@@ -98,12 +107,19 @@ class EnrollmentDetailsAPIView(RetrieveAPIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
     
     def get_object(self):
-        id = self.kwargs.get('pk')
+        # First, try by pk if provided
+        pk = self.kwargs.get('pk')
+        if pk and pk != 0:
+            return get_object_or_404(self.queryset, pk=pk)
         
-        try:
-            return self.queryset.get(pk=id)
-        except Enrollment.DoesNotExist:
-            raise NotFound("Enrollment not found")
+        # Otherwise, find by user_id and course_id
+        user_id = self.request.query_params.get('user_id')
+        course_id = self.request.query_params.get('course_id')
+
+        if not user_id or not course_id:
+            raise NotFound("user_id and course_id are required to find the enrollment.")
+
+        return get_object_or_404(self.queryset, user_id=user_id, course_id=course_id)
 
 
 class EnrollmentCreateAPIView(CreateAPIView):
