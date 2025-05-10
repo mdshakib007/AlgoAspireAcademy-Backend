@@ -50,7 +50,7 @@ class UserRegistrationView(APIView):
             
             token = default_token_generator.make_token(user)
             uid = urlsafe_base64_encode(force_bytes(user.pk))
-            confirm_link = f"http://127.0.0.1:8000/api/account/confirm-email/{uid}/{token}/"
+            confirm_link = f"http://api-algoaspire-academy.vercel.app/api/account/confirm-email/{uid}/{token}/"
 
             subject = "Confirm Your Email"
             email_body = render_to_string('account/confirm_email.html', {'confirm_link': confirm_link})
