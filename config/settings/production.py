@@ -1,7 +1,12 @@
-# config/settings/development.py
+from .base import *
 
-DEBUG = False
-ALLOWED_HOSTS = ['production-domain.com']
+
+DEBUG = True
+ALLOWED_HOSTS = [
+    'algoaspire-academy.vercel.app', 
+    'api-algoaspire-academy.vercel.app',
+    '127.0.0.1'
+]
 
 # database
 DATABASES = {
